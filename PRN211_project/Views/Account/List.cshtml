@@ -1,0 +1,36 @@
+﻿@using PRN211_test.Enums
+@using PRN211_test.Models
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+   // List<Account> listA = ViewData["listAccount"] as List<Account>;
+}
+<table>
+    <thead>
+        <tr>Id</tr>
+        <tr>UserName</tr>
+        <tr>Password</tr>
+        <tr>FullName</tr>
+        <tr>Email</tr>
+        <tr>Roll</tr>
+    </thead>
+
+    @foreach(Account a in Model)
+    @* @foreach (Account a in ViewBag.listAccount) *@
+    {
+        <tr>
+            <td>@a.Id</td>
+            <td>@a.UserName</td>
+            <td>@a.Password</td>
+            <td>@a.FullName</td>
+            <td>@a.Email</td>
+            <td>
+                 @RollTypeConverter.ConvertIntToRollType((a.Roll).Value)
+            </td>
+        </tr>
+    }
+</table>
+<a href="/auth/signout">sign out </a>
+
+

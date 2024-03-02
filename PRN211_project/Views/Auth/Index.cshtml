@@ -1,0 +1,39 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>@ViewData["Title"] - Organic Mind</title>
+    <!-- Add your head content here -->
+    @* <link rel="stylesheet" href="~/css/styles.css" asp-append-version="true" /> *@
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+    <div class="grid grid-cols-4 h-[95vh] m-5 gap-x-5 ">
+        <div class="col-span-2 bg-black border-[1px] rounded-xl">
+            <p class="text-amber-50 text-4xl font-bold w-20 m-5 font-sans mb-10">Organic Mind</p>
+            <div class="h-[450px] flex justify-center">
+                <img src="~/image/landing.png" class="h-full" />
+            </div>
+        </div>
+        <div class="col-span-2 border-[1px] rounded-xl flex justify-center items-center">
+            <div class="w-9/12">
+                <p class="text-5xl font-bold text-[212529] ">Productive Mind</p>
+                <p class="my-5 font-[500] text-[#444444]">
+                    With only the features you need, Organic Mind is customized for individuals seeking a stress-free way to stay focused on their goals, projects, and tasks.
+                </p>
+                <a class=" align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs w-full py-3 px-6 my-3 rounded-lg bg-amber-300 shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none text-[212529]"
+                    href="/auth/signup"
+                        type="button" >
+                Get Started
+                </a>
+                <a href="/auth/login">Already have an account? Sign in</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

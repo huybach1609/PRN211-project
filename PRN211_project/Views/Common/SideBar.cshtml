@@ -1,0 +1,34 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+@* sidebar *@
+<div class="col-span-1 h-[96vh] bg-stone-50 rounded-3xl grid grid-rows-10 gap-2 divide divide-y px-5 py-2">
+    @* heading *@
+    <div class="row-start-1 row-end-2 p-2 ">heading</div>
+    @* task *@
+    <div class="row-span-3 p-2 ">task</div>
+    @* list *@
+    <div class="row-span-3 p-2 ">list</div>
+    @* tags *@
+    <div class="row-span-2  p-2 ">tags</div>
+
+    @* setting *@
+    <div class="row-start-10 row-end-12 flex flex-wrap ">
+        <a href="/account/update"
+            class="w-full hover:bg-amber-50 pl-2 pb-2 flex gap-2 items-center text-stone-600  mt-2">
+            <i class="uil uil-sliders-v-alt text-2xl"></i>
+            <span class="font-medium">Setting</span>
+        </a>
+        <a href="/auth/signout"
+            class="w-full hover:bg-amber-50 pl-2 pb-2 flex gap-2 items-center text-stone-600">
+            <i class="uil uil-signout text-2xl"></i>
+            <span class="font-medium">Sign out</span>
+        </a>
+
+    </div>
+
+
+</div>
+
