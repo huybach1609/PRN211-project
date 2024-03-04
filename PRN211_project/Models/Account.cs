@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace PRN211_test.Models
+namespace PRN211_project.Models
 {
-    [Serializable]
     public partial class Account
     {
         public Account()
         {
             Lists = new HashSet<List>();
+            StickyNotes = new HashSet<StickyNote>();
         }
 
         public int Id { get; set; }
@@ -19,5 +19,6 @@ namespace PRN211_test.Models
         public int? Roll { get; set; }
 
         public virtual ICollection<List> Lists { get; set; }
+        public virtual ICollection<StickyNote> StickyNotes { get; set; }
     }
 }

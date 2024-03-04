@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
-namespace PRN211_test.Models
+namespace PRN211_project.Models
 {
     public partial class PRN211_projectContext : DbContext
     {
         // singeton
         private static PRN211_projectContext ins;
         private static readonly object instanceLock = new object();
-        public static PRN211_projectContext Ins 
+        public static PRN211_projectContext Ins
         {
             get
             {
@@ -38,6 +38,7 @@ namespace PRN211_test.Models
 
         public virtual DbSet<Account> Accounts { get; set; } = null!;
         public virtual DbSet<List> Lists { get; set; } = null!;
+        public virtual DbSet<StickyNote> StickyNotes { get; set; } = null!;
         public virtual DbSet<SubTask> SubTasks { get; set; } = null!;
         public virtual DbSet<Tag> Tags { get; set; } = null!;
         public virtual DbSet<Task> Tasks { get; set; } = null!;
@@ -51,8 +52,6 @@ namespace PRN211_test.Models
                 optionsBuilder.UseSqlServer(GetConnectionString());
             }
         }
-
-
         private string GetConnectionString()
         {
             IConfiguration config = new ConfigurationBuilder()
@@ -62,6 +61,8 @@ namespace PRN211_test.Models
             var strConn = config["ConnectionStrings:Default"];
             return strConn;
         }
+
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Account>(entity =>
@@ -83,14 +84,30 @@ namespace PRN211_test.Models
                     .HasConstraintName("FK__List__AccountID__398D8EEE");
             });
 
+            modelBuilder.Entity<StickyNote>(entity =>
+            {
+                entity.ToTable("StickyNote");
+
+                entity.HasOne(d => d.Account)
+                    .WithMany(p => p.StickyNotes)
+                    .HasForeignKey(d => d.AccountId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__StickyNot__Accou__5CD6CB2B");
+            });
+
             modelBuilder.Entity<SubTask>(entity =>
             {
                 entity.ToTable("SubTask");
 
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Status).HasDefaultValueSql("((0))");
+
                 entity.HasOne(d => d.Task)
                     .WithMany(p => p.SubTasks)
                     .HasForeignKey(d => d.TaskId)
-                    .HasConstraintName("FK__SubTask__TaskId__412EB0B6");
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("SubTask_Task_Id_fk");
             });
 
             modelBuilder.Entity<Tag>(entity =>
@@ -99,7 +116,7 @@ namespace PRN211_test.Models
                     .WithMany(p => p.Tags)
                     .UsingEntity<Dictionary<string, object>>(
                         "TagsTask",
-                        l => l.HasOne<Task>().WithMany().HasForeignKey("TaskId").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK__TagsTask__TaskId__44FF419A"),
+                        l => l.HasOne<Task>().WithMany().HasForeignKey("TaskId").HasConstraintName("FK__TagsTask__TaskId__44FF419A"),
                         r => r.HasOne<Tag>().WithMany().HasForeignKey("TagsId").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK__TagsTask__TagsId__440B1D61"),
                         j =>
                         {
@@ -113,16 +130,17 @@ namespace PRN211_test.Models
             {
                 entity.ToTable("Task");
 
-                entity.Property(e => e.DueDate).HasColumnType("date");
+                entity.Property(e => e.CreateDate)
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("(getdate())");
 
-                entity.Property(e => e.Name)
-                    .HasMaxLength(10)
-                    .IsFixedLength();
+                entity.Property(e => e.DueDate).HasColumnType("date");
 
                 entity.HasOne(d => d.List)
                     .WithMany(p => p.Tasks)
                     .HasForeignKey(d => d.ListId)
-                    .HasConstraintName("FK__Task__ListId__3E52440B");
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("Task_List_Id_fk");
             });
 
             OnModelCreatingPartial(modelBuilder);

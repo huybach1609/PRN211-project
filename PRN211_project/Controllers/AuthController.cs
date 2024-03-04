@@ -2,7 +2,7 @@
 using Newtonsoft.Json;
 using PRN211_project.Fillters;
 using PRN211_test.Enums;
-using PRN211_test.Models;
+using PRN211_project.Models;
 
 namespace PRN211_test.Controllers
 {

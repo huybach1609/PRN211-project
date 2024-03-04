@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc.Filters;
 using Newtonsoft.Json;
 using PRN211_test.Enums;
-using PRN211_test.Models;
+using PRN211_project.Models;
 using PRN211_project.Fillters;
 using Microsoft.AspNetCore.Http;
 

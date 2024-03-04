@@ -1,34 +1,113 @@
 ﻿@*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
+
+
+@using Newtonsoft.Json
+@using PRN211_project.Models;
 @{
+    Account acc = JsonConvert.DeserializeObject<Account>(Context.Session.GetString("sesUser"));
+
+    List<Tag> list2 = PRN211_projectContext.Ins.Tags.ToList();
+    List<string> colors = new List<string>() { "#736ced", "#d4c1ec", "#d0e3cc", "#d3c1c3", "#cce8cc", "#ff8b94" };
+    Random rnd = new Random();
+
+    List<List> list1 = PRN211_projectContext.Ins.Lists.Where(x => x.AccountId == acc.Id).ToList();
+
 }
 @* sidebar *@
 <div class="col-span-1 h-[96vh] bg-stone-50 rounded-3xl grid grid-rows-10 gap-2 divide divide-y px-5 py-2">
     @* heading *@
-    <div class="row-start-1 row-end-2 p-2 ">heading</div>
+    <div class="row-start-1 row-end-2">
+        <p class="text-2xl font-bold leading-7 text-neutral-700 sm:truncate sm:text-3xl sm:tracking-tight p-2">
+            <a>Menu</a>
+        </p>
+        <input type="text" name="price" id="price"
+               class="block ml-2 w-2/3 rounded-md border-0 py-1.5 pl-3 pr-20 bg-transparent text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-amber-600 sm:text-sm sm:leading-6" placeholder="Search">
+    </div>
     @* task *@
-    <div class="row-span-3 p-2 ">task</div>
+    <div class="row-span-3  mt-4 mx-2 pt-3">
+        <p class="font-medium text-sm">TASKS</p>
+        <div class="grid grid-row-4 gap-1  mt-3 ml-1">
+            <div class="hover:bg-amber-50 active:bg-amber-950 active:text-amber-50 pl-2 p-1  text-sm rounded-xl font-medium flex items-center">
+                <i class="text-xl font-light uil uil-angle-double-right"></i>
+                <span class="ml-2">Up Coming</span>
+            </div>
+            <div class="hover:bg-amber-50 active:bg-amber-950 active:text-amber-50 pl-2  p-1  text-sm rounded-xl font-medium flex items-center">
+                <i class="text-xl uil uil-clipboard"></i>
+                <span class="ml-2">Today</span>
+            </div>
+            <div class="hover:bg-amber-50 active:bg-amber-950 active:text-amber-50 pl-2  p-1 text-sm rounded-xl font-medium flex items-center">
+                <i class="text-xl  uil uil-calender"></i>
+                <span class="ml-2">Calender</span>
+            </div>
+            <div onclick="window.location.href='/stickynote';"
+                 class="hover:bg-amber-50 active:bg-amber-950 active:text-amber-50 pl-2  p-1  text-sm rounded-xl font-medium flex items-center">
+                <i class="text-xl uil uil-comment-alt-notes"></i>
+                <span class="ml-2">Sticky note</span>
+            </div>
+        </div>
+    </div>
     @* list *@
-    <div class="row-span-3 p-2 ">list</div>
+    <div class="row-span-3 mt-2 mx-2 pt-3">
+        <p class="font-medium text-sm">LISTS</p>
+        <div class="grid grid-row-4 gap-1  mt-3 ml-1">
+            @{
+                int countList = list1.Count;
+                if (countList > 3)
+                {
+                    countList = 3;
+                }
+            }
+
+            @for (int i = 0; i < countList; i++)
+            {
+                int code = rnd.Next(0, colors.Count - 1);
+                <div class="hover:bg-amber-50 active:bg-amber-950 active:text-amber-50 pl-2 p-1  text-sm rounded-xl font-medium flex items-center">
+                    <span class="bg-[@(colors[code])]  w-5 h-5 m-1 rounded"></span>
+                    <span class="ml-2">@list1[i].Name </span>
+                </div>
+            }
+            <div>
+                <div class=" active:text-amber-900 pl-2 p-1  text-sm rounded-xl font-medium flex items-center">
+                    <i class="text-xl font-light "></i>
+                    <a href="/list" class="ml-2">View All</a>
+                </div>
+            </div>
+        </div>
+    </div>
     @* tags *@
-    <div class="row-span-2  p-2 ">tags</div>
+    <div class="row-span-2  mt-2 mx-2">
+        <p class="font-medium text-sm">TAGS</p>
+        <div class="flex flex-wrap gap-1 mt-3">
+
+            @for (int i = 0; i < 5; i++)
+            {
+                int code = rnd.Next(0, colors.Count - 1);
+                <div class="w-fit bg-[@(colors[code])]  relative grid select-none items-center whitespace-nowrap rounded-md py-1.5 px-3 font-sans text-xs font-bold uppercase text-white">
+                    <span class="">@list2[i].Name</span>
+                </div>
+            }
+
+        </div>
+        <div class=" active:text-amber-900 my-2  text-sm rounded-xl font-medium flex items-center">
+            <i class="text-xl font-light "></i>
+            <span class="ml-2">View All</span>
+        </div>
+    </div>
 
     @* setting *@
     <div class="row-start-10 row-end-12 flex flex-wrap ">
         <a href="/account/update"
-            class="w-full hover:bg-amber-50 pl-2 pb-2 flex gap-2 items-center text-stone-600  mt-2">
+           class="w-full hover:bg-amber-50 pl-2 pb-2 flex gap-2 items-center text-stone-600  mt-2">
             <i class="uil uil-sliders-v-alt text-2xl"></i>
             <span class="font-medium">Setting</span>
         </a>
         <a href="/auth/signout"
-            class="w-full hover:bg-amber-50 pl-2 pb-2 flex gap-2 items-center text-stone-600">
+           class="w-full hover:bg-amber-50 pl-2 pb-2 flex gap-2 items-center text-stone-600">
             <i class="uil uil-signout text-2xl"></i>
             <span class="font-medium">Sign out</span>
         </a>
-
     </div>
-
-
 </div>
 

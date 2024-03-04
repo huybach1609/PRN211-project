@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace PRN211_test.Models
+namespace PRN211_project.Models
 {
     public partial class List
     {

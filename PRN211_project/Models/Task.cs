@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace PRN211_test.Models
+namespace PRN211_project.Models
 {
     public partial class Task
     {
@@ -17,6 +17,7 @@ namespace PRN211_test.Models
         public DateTime? DueDate { get; set; }
         public bool? Status { get; set; }
         public int? ListId { get; set; }
+        public DateTime? CreateDate { get; set; }
 
         public virtual List? List { get; set; }
         public virtual ICollection<SubTask> SubTasks { get; set; }
