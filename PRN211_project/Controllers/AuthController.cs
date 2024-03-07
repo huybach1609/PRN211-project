@@ -46,7 +46,12 @@ namespace PRN211_test.Controllers
                 {
                     Account fullacc = CheckAcc(accI);
 
-                    var userJson = JsonConvert.SerializeObject(fullacc);
+                    var settings = new JsonSerializerSettings
+                    {
+                        ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                    };
+
+                    var userJson = JsonConvert.SerializeObject(fullacc, settings);
                     HttpContext.Session.SetString("sesUser", userJson);
                     if (fullacc.Roll == (int) RollType.Admin)
                     {

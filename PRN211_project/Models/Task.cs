@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 namespace PRN211_project.Models
 {
+    [Serializable]
     public partial class Task
     {
         public Task()

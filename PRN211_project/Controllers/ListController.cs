@@ -44,7 +44,6 @@ namespace PRN211_project.Controllers
 
         public IActionResult Delete(int id)
         {
-
             Models.List list = PRN211_projectContext.Ins.Lists.SingleOrDefault(x => x.Id == id);
             if (list != null)
             {

@@ -16,7 +16,7 @@
 
 }
 @* sidebar *@
-<div class="col-span-1 h-[96vh] bg-stone-50 rounded-3xl grid grid-rows-10 gap-2 divide divide-y px-5 py-2">
+<div class="col-span-1 h-[96vh] min-h-[800px]  bg-stone-50 rounded-3xl grid grid-rows-10 gap-2 divide divide-y px-5 py-2">
     @* heading *@
     <div class="row-start-1 row-end-2">
         <p class="text-2xl font-bold leading-7 text-neutral-700 sm:truncate sm:text-3xl sm:tracking-tight p-2">
@@ -46,6 +46,11 @@
                 <i class="text-xl uil uil-comment-alt-notes"></i>
                 <span class="ml-2">Sticky note</span>
             </div>
+            <div class=" active:text-amber-900 pl-2 p-1  text-sm rounded-xl font-medium flex items-center">
+                <i class="text-xl font-light "></i>
+                <a href="/task/show" class="ml-2">View All</a>
+            </div>
+
         </div>
     </div>
     @* list *@

@@ -53,6 +53,11 @@ namespace PRN211_test.Controllers
 
 
 
+        public IActionResult Add()
+        {
+            return View();
+
+        }
 
         [TypeFilter(typeof(AuthenticationFillter))]
         [TypeFilter(typeof(AdminFilter))]

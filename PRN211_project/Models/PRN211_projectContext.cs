@@ -52,13 +52,13 @@ namespace PRN211_project.Models
                 optionsBuilder.UseSqlServer(GetConnectionString());
             }
         }
-        private string GetConnectionString()
+        private static string  GetConnectionString()
         {
             IConfiguration config = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", true, true)
                 .Build();
-            var strConn = config["ConnectionStrings:Default"];
+            var strConn = config["ConnectionStrings:Local"];
             return strConn;
         }
 

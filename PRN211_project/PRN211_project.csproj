@@ -4,11 +4,14 @@
     <TargetFramework>net6.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>06372b7f-15cc-4943-8226-a17e2e81d4bd</UserSecretsId>
+    <StartupObject></StartupObject>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Http.Extensions" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Session" Version="2.2.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.27" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.27">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

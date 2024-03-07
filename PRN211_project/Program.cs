@@ -1,8 +1,13 @@
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileSystemGlobbing.Internal;
 using PRN211_project.Fillters;
+using PRN211_project.Models;
+using System.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
+
+
 
 builder.Services.AddSession(options =>
 {
