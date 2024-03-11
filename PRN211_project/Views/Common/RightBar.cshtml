@@ -1,4 +1,5 @@
-﻿@*
+﻿@using PRN211_project.Models
+@*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
 @{
@@ -7,14 +8,21 @@
     <a href="javascript:void(0)" class="closebtn absolute top-3 right-5 text-neutral-700 text-3xl flex justify-center items-center" onclick="closeNav()"><i class="uil uil-times"></i></a>
     <div class="absolute top-3 left-5 text-neutral-700 text-4xl font-medium flex justify-center items-center">Task</div>
 
-    <form id="insertTaskForm" class="hidden"
+    <form id="insertTaskForm" class="hidden overflow-y-scroll mb-10"
           action="/task/insert" method="post">
         <div href="#" class="h-[85%]  mt-10 py-2 pl-8 block transition duration-300 ">
             <div class="w-[95%] mt-3 ">
-                <input class="border-[1px] border-gray-100 rounded-xl bg-transparent w-full"
+                <input class="border-[1px] border-gray-100 rounded-xl bg-transparent w-full mb-5"
                        type="text" name="Name" placeholder="Task Name" /><br />
-                <textarea class="mt-2 border-[1px] border-gray-100 rounded-xl bg-transparent w-full pl-3 pt-2"
+                <textarea id="textareaw" class=" border-[1px] border-gray-100 rounded-xl bg-transparent w-full pl-3 pt-2"
                           rows="4" name="Description" placeholder="Details" /></textarea><br />
+                <script>
+                    tinymce.init({
+                        selector: '#textareaw',
+                        menubar: false,
+                        content_style: "body { 	background-color: #EBEBEB; border: none;  }"
+                    });
+                </script>
             </div>
             <div class="grid grid-cols-10 w-2/3 gap-y-3 text-gray-700">
                 <span class="font-medium col-span-3 my-auto">
@@ -31,7 +39,9 @@
                     Due date:
                 </span>
                 <input class="font-medium col-span-7 bg-transparent rounded-xl p-2"
-                       type="date" name="DueDate" />
+                       type="date" name="DueDate" value='@DateTime.Now.ToString("yyyy-MM-dd")' />
+
+
             </div>
             <input type="hidden" name="Status" value="false" /><br />
         </div>
@@ -40,56 +50,42 @@
             <button class="rounded-xl col-span-1 py-2 px-4 font-medium bg-amber-200" type="submit" onclick="insertSubmit()">Add</button>
         </div>
     </form>
-    <script>
-        function insertSubmit() {
-            $("#insertTaskForm").submit(function (e) {
-
-                e.preventDefault(); // avoid to execute the actual submit of the form.
-
-                var form = $(this);
-                var actionUrl = form.attr('action');
-
-                $.ajax({
-                    type: "POST",
-                    url: actionUrl,
-                    data: form.serialize(), // serializes the form's elements.
-                    success: function (data) {
-
-                        alert(data);
-                        setTimeout(function () {
-                            location.reload();
-                        }, 300); // 2000 milliseconds = 2 seconds
-                    }
-                });
-            });
-        }
-    </script>
 
     <form id="editTaskForm" action="/task/update" class="hidden">
         <div href="#" class="h-[85%]  mt-10 py-2 pl-8 block transition duration-300 ">
             <div class="w-[95%] mt-3 ">
+                @* name *@
                 <input id="Name"
-                       class="border-[1px] border-gray-100 rounded-xl bg-transparent w-full"
+                       class="border-[1px] border-gray-100 rounded-xl bg-transparent w-full mb-5"
                        type="text" name="Name" placeholder="Task Name" /><br />
+                @* Description *@
                 <textarea id="Description"
                           class="mt-2 border-[1px] border-gray-100 rounded-xl bg-transparent w-full pl-3 pt-2"
                           rows="8" name="Description" placeholder="Details" /></textarea><br />
+                <script>
+                    tinymce.init({
+                        selector: '#Description',
+                        height: 500,
+                        menubar: false,
+                        content_style: "body { 	background-color: #FAFAF9;color:#404040; border: none;  }"
+                    });
+                </script>
             </div>
             <div class="grid grid-cols-10 w-2/3 gap-y-3 text-gray-700">
 
                 <span class="font-medium col-span-3 my-auto">
                     List:
                 </span>
-
+                @* listid *@
                 <select id="ListId"
                         name="ListId" class="font-medium col-span-7 bg-transparent rounded-xl p-2">
                     @foreach (PRN211_project.Models.List l in ViewBag.Lists)
                     {
-                        <option value="@l.Id">@l.Name</option>
+
+                        <option value="@l.Id" @(ViewBag.ShowList != null && ViewBag.ShowList == l.Id)?"selected":"">@l.Name</option>
                     }
                 </select>
-
-
+                @* duedate *@
                 <span class="font-medium col-span-3 my-auto">
                     Due date:
                 </span>
@@ -97,68 +93,42 @@
                        class="font-medium col-span-7 bg-transparent rounded-xl p-2"
                        type="date" name="DueDate" />
             </div>
+            @* status *@
             <input id="Status"
                    type="hidden" name="Status" value="false" /><br />
-            <input id="Id"
+            @* id *@
+            <input id="taskId"
                    type="hidden" name="Id" value="" /><br />
+        </div>
+        <div class="w-[90%]  mx-auto mb-5">
+               <div id="tagshow"></div> 
+
+            <button id="dropdownDividerButton" data-dropdown-toggle="dropdownDivider"
+                    class="" type="button">
+                Add Tag 
+            </button>
+
+            <!-- Dropdown menu -->
+            <div id="dropdownDivider" class="z-10 hidden h-32 overflow-y-scroll bg-white divide-y divide-gray-100 rounded-lg shadow w-44 ">
+                <ul class="py-2 text-sm text-gray-700" aria-labelledby="dropdownDividerButton">
+                    @foreach (Tag tag in ViewBag.Tags)
+                    {
+                        <li>
+                            <a class="block px-4 py-2 hover:bg-gray-100 ">@tag.Name </a>
+                        </li>
+                    }
+                </ul>
+            </div>
         </div>
         <div class="w-[90%] grid grid-cols-2 gap-4 m-auto">
             <button type="reset" id="resetBtn" class="hidden"></button>
-            <a id="deleteBtn" href="/task/delete"
-               onclick="return confirm('are you sure to delete? ')"
-                 class="text-center bg-transparent font-medium col-span-1 py-2 px-4 border-[1px] rounded-xl ">Delete Task</a>
-            <button class="rounded-xl col-span-1 py-2 px-4 font-medium bg-amber-200" type="submit" onclick="updateSubmit()">Save Change</button>
+            <button type="button" id="deleteBtn"
+                    class="text-center bg-transparent font-medium col-span-1 py-2 px-4 border-[1px] rounded-xl hover:text-amber-900 active:bg-amber-950/80 active:text-amber-50 ">
+                Delete Task
+            </button>
+            <button class="rounded-xl col-span-1 py-2 px-4 font-medium bg-amber-200 hover:bg-amber-200/50 active:text-amber-500 active:bg-amber-100" type="submit" onclick="updateSubmit()">Save Change</button>
         </div>
     </form>
 </div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>
 
-<script>
-    const divId = document.querySelector("#Id");
-    function loadData(id) {
-        document.querySelector("#resetBtn").click();
-        $.ajax({
-            url: "/task/getData",
-            type: "post", //send it through get method
-            data: {
-                taskId: id,
-
-            },
-            success: function (response) {
-                var object = JSON.parse(response);
-                document.querySelector("#Name").value = object.Name;
-                document.querySelector("#Description").value = object.Description;
-                document.querySelector("#ListId").value = object.ListId;
-                document.querySelector("#Status").value = object.Status;
-               divId.value = object.Id;
-                document.querySelector("#deleteBtn").href = '/task/delete?id='+object.Id;
-               
-
-
-                var originalDueDate = object.DueDate;
-                var formattedDueDate = originalDueDate.split('T')[0];
-                document.querySelector("#DueDate").value = formattedDueDate;
-
-            },
-            error: function (xhr) {
-                //Do Something to handle error
-            }
-        });
-    }
-    function insert
-
-    function openNav() {
-        document.getElementById("mySidebar").style.width = "500px";
-        document.getElementById("main").style.marginRight = "500px";
-    }
-
-    function closeNav() {
-        var insertTaskForm = document.getElementById("insertTaskForm");
-        var editTaskForm = document.getElementById("editTaskForm");
-        setTimeout(function () {
-            insertTaskForm.style.display = "none";
-            editTaskForm.style.display = "none";
-        }, 300); // 2000 milliseconds = 2 seconds
-        document.getElementById("mySidebar").style.width = "0";
-        document.getElementById("main").style.marginRight = "0";
-    }
-</script>

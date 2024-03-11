@@ -9,23 +9,31 @@ namespace PRN211_project.Controllers
     {
         public IActionResult Index()
         {
-            ViewData["Title"] = "StickyNote";
+            using (PRN211_projectContext context = new PRN211_projectContext())
+            {
 
-            Account acc = JsonConvert.DeserializeObject<Account>(HttpContext.Session.GetString("sesUser"));
+                ViewData["Title"] = "StickyNote";
 
-            List<StickyNote> listS = PRN211_projectContext.Ins.StickyNotes.Where(stick => stick.AccountId == acc.Id).ToList();
-            ViewBag.listS = listS;
-            ViewBag.accId= acc.Id;
+                Account acc = JsonConvert.DeserializeObject<Account>(HttpContext.Session.GetString("sesUser"));
+
+                List<StickyNote> listS = context.StickyNotes.Where(stick => stick.AccountId == acc.Id).ToList();
+                ViewBag.listS = listS;
+                ViewBag.accId = acc.Id;
+            }
             return View("/Views/StickyNote/Index.cshtml");
         }
- 
+
         public IActionResult Add(StickyNote sticky)
         {
-            StickyNote stick= PRN211_projectContext.Ins.StickyNotes.SingleOrDefault(x => x.Id == sticky.Id); //returns a single item.
-            if (stick == null)
+
+            using (PRN211_projectContext context = new PRN211_projectContext())
             {
-                PRN211_projectContext.Ins.StickyNotes.Add(sticky);
-                PRN211_projectContext.Ins.SaveChanges();
+                StickyNote stick = context.StickyNotes.SingleOrDefault(x => x.Id == sticky.Id); //returns a single item.
+                if (stick == null)
+                {
+                    context.StickyNotes.Add(sticky);
+                    context.SaveChanges();
+                }
             }
             return Redirect("/stickynote");
         }
@@ -33,15 +41,19 @@ namespace PRN211_project.Controllers
         [HttpPost]
         public IActionResult Update(StickyNote sticky)
         {
-            ViewBag.anoc = "update";
-            StickyNote result = PRN211_projectContext.Ins.StickyNotes.FirstOrDefault(x => sticky.Id == x.Id);
 
-
-            if (result != null)
+            using (PRN211_projectContext context = new PRN211_projectContext())
             {
-                result.Name = sticky.Name;
-                result.Details = sticky.Details;
-                PRN211_projectContext.Ins.SaveChanges();
+                ViewBag.anoc = "update";
+                StickyNote result = context.StickyNotes.FirstOrDefault(x => sticky.Id == x.Id);
+
+
+                if (result != null)
+                {
+                    result.Name = sticky.Name;
+                    result.Details = sticky.Details;
+                    context.SaveChanges();
+                }
             }
 
             return Redirect("/stickynote");
@@ -49,12 +61,16 @@ namespace PRN211_project.Controllers
 
         public IActionResult Delete(int id)
         {
-            StickyNote stick = PRN211_projectContext.Ins.StickyNotes.SingleOrDefault(x => x.Id == id); //returns a single item.
 
-            if (stick != null)
+            using (PRN211_projectContext context = new PRN211_projectContext())
             {
-                PRN211_projectContext.Ins.StickyNotes.Remove(stick);
-                PRN211_projectContext.Ins.SaveChanges();
+                StickyNote stick = context.StickyNotes.SingleOrDefault(x => x.Id == id); //returns a single item.
+
+                if (stick != null)
+                {
+                    context.StickyNotes.Remove(stick);
+                    context.SaveChanges();
+                }
             }
             return Redirect("/stickynote");
         }

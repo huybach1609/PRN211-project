@@ -11,8 +11,6 @@ namespace PRN211_project.Fillters
         public void OnActionExecuted(ActionExecutedContext context)
         {
         }
-
-
         public void OnActionExecuting(ActionExecutingContext context)
         {
             // Access HttpContext through the context parameter

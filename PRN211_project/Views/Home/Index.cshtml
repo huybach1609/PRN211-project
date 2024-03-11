@@ -2,6 +2,7 @@
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
 @{
+    List<String> alo = new List<string> { "#f87171", "#fb923c", "#facc15", "#a3e635", "#34d399", "#4f46e5" };
 }
 @using PRN211_project.Models
 <!DOCTYPE html>
@@ -16,9 +17,26 @@
         @* sidebar *@
         @Html.Partial("~/Views/Common/SideBar.cshtml")
 
-        <div class=" col-span-3 h-10/12  rounded-3xl p-10 overflow-scroll">
-
+        <div class="flex items-center col-span-3 h-10/12  rounded-3xl p-10 overflow-scroll bg-black">
+            <div class="m-auto w-80 grid grid-cols-4 ">
+                <div class="h-20 col-span-2 border-[0.5px] flex justify-center items-center text-white border-amber-50">you hex id <span id="hexId" class=""> </span></div>
+                @foreach (string id in alo)
+                {
+                    <div onmouseover="changeText('@id');" class="h-20 col-span-1 text-stone-700 flex font-bold justify-center items-center hover:text-[@id] border-[0.5px] border-amber-50">next</div>
+                }
+            </div>
         </div>
+        <script>
+            function changeText(id) {
+                var textHex = document.querySelector("#hexId")
+                var no = "<span class='transition ease-in-out delay-150 text-[";
+                no += id;
+                no += "]'> "
+                no += id + "</span>"
+                console.log(no);
+                textHex.innerHTML = no;
+            }
+        </script>
 
     </div>
 </body>

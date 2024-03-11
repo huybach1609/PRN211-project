@@ -19,7 +19,8 @@ namespace PRN211_test.Controllers
         // account/add
         [HttpGet]
         [TypeFilter(typeof(AuthenticationFillter))]
-        public IActionResult Update(){
+        public IActionResult Update()
+        {
             var sesUserJson = HttpContext.Session.GetString("sesUser");
             Account sesUser = JsonConvert.DeserializeObject<Account>(sesUserJson);
             ViewData["Title"] = sesUser.FullName;
@@ -27,28 +28,34 @@ namespace PRN211_test.Controllers
         }
         [HttpPost]
         [TypeFilter(typeof(AuthenticationFillter))]
-        public IActionResult Update(Account acc) {
+        public IActionResult Update(Account acc)
+        {
             // get user ses
             var sesUserJson = HttpContext.Session.GetString("sesUser");
             Account sesUser = JsonConvert.DeserializeObject<Account>(sesUserJson);
 
-            var result = PRN211_projectContext.Ins.Accounts.SingleOrDefault(a => a.Id == sesUser.Id);
-            if (result != null)
+            using (PRN211_projectContext context = new PRN211_projectContext())
             {
-                result.UserName = acc.UserName;
-                result.FullName = acc.FullName;
-                result.Email = acc.Email;
-                result.Password = acc.Password;
-                PRN211_projectContext.Ins.SaveChanges();
+                var result = context.Accounts.SingleOrDefault(a => a.Id == sesUser.Id);
+                if (result != null)
+                {
+                    result.UserName = acc.UserName;
+                    result.FullName = acc.FullName;
+                    result.Email = acc.Email;
+                    result.Password = acc.Password;
+                    context.SaveChanges();
+                }
+
+                // update sesion User
+                HttpContext.Session.Remove("sesUser");
+                var settings = new JsonSerializerSettings
+                {
+                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                };
+                var userJson = JsonConvert.SerializeObject(result, settings);
+                HttpContext.Session.SetString("sesUser", userJson);
             }
-            
-            // update sesion User
-            HttpContext.Session.Remove("sesUser");
-            var userJson = JsonConvert.SerializeObject(result);
-            HttpContext.Session.SetString("sesUser", userJson);
-
             return Update();
-
         }
 
 
@@ -67,8 +74,12 @@ namespace PRN211_test.Controllers
             // viewbag, viewdata, model
             // gửi bằng view bag
             // gửi bằng viewData
-            List<Account> listA = PRN211_projectContext.Ins.Accounts.ToList();
-            ViewData["listAccount"] = listA;
+            List<Account> listA = new List<Account>();
+            using (PRN211_projectContext context = new PRN211_projectContext())
+            {
+                listA= context.Accounts.ToList();
+                ViewData["listAccount"] = listA;
+            }
             return View(listA);
         }
 

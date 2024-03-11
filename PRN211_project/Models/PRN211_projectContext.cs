@@ -7,27 +7,8 @@ namespace PRN211_project.Models
 {
     public partial class PRN211_projectContext : DbContext
     {
-        // singeton
-        private static PRN211_projectContext ins;
-        private static readonly object instanceLock = new object();
-        public static PRN211_projectContext Ins
-        {
-            get
-            {
-                lock (instanceLock)
-                {
-                    if (ins == null)
-                    {
-                        ins = new PRN211_projectContext();
-                    }
 
-                }
-                return ins;
-            }
-        }
-
-
-        private PRN211_projectContext()
+        public PRN211_projectContext()
         {
         }
 

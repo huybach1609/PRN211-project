@@ -8,12 +8,14 @@ namespace PRN211_test.Controllers
 {
     public class AuthController : Controller
     {
+        [TypeFilter(typeof(AuthFilter))]
         public IActionResult Index()
         {
             ViewData["Title"] = "Begin";
             return View();
         }
 
+        [TypeFilter(typeof(AuthFilter))]
         [HttpGet]
         public IActionResult SignUp()
         {
@@ -22,21 +24,32 @@ namespace PRN211_test.Controllers
 
             return View();
         }
+
+        [TypeFilter(typeof(AuthFilter))]
         [HttpPost]
         public IActionResult SignUp(Account acc)
         {
-            acc.Roll = (int)RollType.User;
-            PRN211_projectContext.Ins.Accounts.Add(acc);
-            PRN211_projectContext.Ins.SaveChanges();
-            ViewBag.mess = "Sign up success";
+            using (PRN211_projectContext context = new PRN211_projectContext())
+            {
+                acc.Roll = (int)RollType.User;
+                context.Accounts.Add(acc);
+                context.SaveChanges();
+                ViewBag.mess = "Sign up success";
+            }
             return View();
+
         }
+
+
+        [TypeFilter(typeof(AuthFilter))]
         [HttpGet]
         public IActionResult Login()
         {
             ViewData["Title"] = "Login page";
             return View();
         }
+
+        [TypeFilter(typeof(AuthFilter))]
         [HttpPost]
         public IActionResult Login(Account accI)
         {
@@ -53,9 +66,9 @@ namespace PRN211_test.Controllers
 
                     var userJson = JsonConvert.SerializeObject(fullacc, settings);
                     HttpContext.Session.SetString("sesUser", userJson);
-                    if (fullacc.Roll == (int) RollType.Admin)
+                    if (fullacc.Roll == (int)RollType.Admin)
                     {
-                    return RedirectToAction("list", "account");
+                        return RedirectToAction("list", "account");
                     }
                     return RedirectToAction("", "home");
                 }
@@ -64,7 +77,7 @@ namespace PRN211_test.Controllers
             return View();
         }
 
-        
+
         [TypeFilter(typeof(AuthenticationFillter))]
         public IActionResult SignOut()
         {
@@ -75,13 +88,17 @@ namespace PRN211_test.Controllers
 
         public Account CheckAcc(Account acc)
         {
-            List<Account> Accounts = PRN211_projectContext.Ins.Accounts.ToList();
-
-            foreach (Account a in Accounts)
+            using (PRN211_projectContext context = new PRN211_projectContext())
             {
-                if (a.UserName.Equals(acc.UserName) && a.Password.Equals(acc.Password))
+
+                List<Account> Accounts = context.Accounts.ToList();
+
+                foreach (Account a in Accounts)
                 {
-                    return a;
+                    if (a.UserName.Equals(acc.UserName) && a.Password.Equals(acc.Password))
+                    {
+                        return a;
+                    }
                 }
             }
             return null;

@@ -1,0 +1,126 @@
+﻿@using PRN211_project.Commons
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+    <style>
+    .hidden {
+        display: none;
+    }
+
+    #alertDiv {
+        transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+
+        #alertDiv.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+</style>
+<div id="alertDiv" role="alert" class="absolute top-3 left-2 flex w-fit m-5 pl-4 px-3 py-4 text-base text-white bg-gray-900/70 backdrop-blur-sm rounded-lg font-regular hidden z-[99]"></div>
+        <script>
+        // Check if ViewBag.Mess is not null or empty
+    
+
+        function showAlert(msg) {
+            var alertDiv = document.getElementById('alertDiv');
+
+            alertDiv.innerHTML = msg;
+            alertDiv.style.display = 'flex'; // Show the alert
+
+            // Trigger a reflow to enable the transition
+            alertDiv.offsetHeight;
+
+            alertDiv.classList.add('visible');
+
+            setTimeout(function () {
+                alertDiv.classList.remove('visible'); // Hide the alert after 3 seconds
+            }, 3000);
+        }
+        // Call showAlert if showMessage is true
+      
+    </script>
+
+     <button id="btnRight" class="hidden openbtn " onclick="openNav()"></button>
+    @Html.Partial("~/Views/Common/RightBar.cshtml")
+
+    <div id="main" class="transition-all duration-500 ">
+        <div class="m-5 bg-white h-[80vh] grid grid-cols-4 gap-x-5">
+            @* sidebar *@
+            @Html.Partial("~/Views/Common/SideBar.cshtml")
+            <div class=" col-span-3 rounded-3xl p-10 overflow-scroll ">
+                @* table *@
+                <p class="font-bold text-6xl pb-4 text-neutral-700">
+                    @ViewData["Head"]
+                </p>
+                <div class=" h-[500px] w-full ">
+
+                    <div class="grid grid-cols-10 border-[1px] rounded-xl" onclick="btnClick(1, 0)">
+                        <div class="col-span-1 text-center flex items-center justify-center text-3xl text-[#444444]"><i class="uil uil-plus"></i></div>
+                        <div class="col-span-9 flex items-center h-16 font-medium text-[#444444]">Add New Task</div>
+                    </div>
+                    <script>
+                        function btnClick(type, id) {
+                                var insertTaskForm = document.getElementById("insertTaskForm");
+                                var editTaskForm = document.getElementById("editTaskForm");
+                            if (type == 1) {
+                                insertTaskForm.style.display = "block";
+                                editTaskForm.style.display = "none";
+                            } else if (type == 2){
+                                loadData(id);
+                                insertTaskForm.style.display = "none";
+                                editTaskForm.style.display = "block";
+                            }
+
+                            const targetButton = document.getElementById("btnRight");
+                            targetButton.click();
+                        }
+                    </script>
+
+                    @foreach (PRN211_project.Models.Task ta in ViewBag.Tasks)
+                    {
+                        <div class="border-b-[1px] h-16 min-h-16 grid grid-cols-10">
+                            <div class=" col-span-1 flex items-center justify-center">
+                                <label class="relative flex items-center p-2 rounded-full cursor-pointer" htmlFor="customStyle">
+                                    <input type="checkbox"
+                                           class="before:content[''] peer relative h-5 w-5 cursor-pointer appearance-none rounded-full border border-gray-900/20 bg-gray-900/10 transition-all before:absolute before:top-2/4 before:left-2/4 before:block before:h-12 before:w-12 before:-translate-y-2/4 before:-translate-x-2/4 before:rounded-full before:bg-blue-gray-500 before:opacity-0 before:transition-opacity checked:border-amber-800 checked:bg-amber-800 checked:before:bg-amber-800 hover:scale-105 hover:before:opacity-0"
+                                           id="customStyle"
+                                           onclick="checkBoxHandle(@ta.Id)"
+                                    @((ta.Status == true) ? "checked" : "") />
+                                    <span class="absolute text-white transition-opacity opacity-0 pointer-events-none top-2/4 left-2/4 -translate-y-2/4 -translate-x-2/4 peer-checked:opacity-100">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor"
+                                             stroke="currentColor" stroke-width="1">
+                                            <path fill-rule="evenodd"
+                                                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                                  clip-rule="evenodd"></path>
+                                        </svg>
+                                    </span
+                                </label>
+                                </div>
+                            <div class="col-span-8 flex flex-col justify-center">
+                                <div class="font-medium text-[#444444] @((ta.Status == true) ? "line-through" : "") " id="nameTask-@ta.Id">@ta.Name</div>
+                            @{
+                                DateTime? nullableDateTime = ta.DueDate;
+                                DateTime show = nullableDateTime ?? DateTime.Now;
+                                string status = DateTimeUtils.CheckedDate(show);
+                                string colorText;
+                                if (status.Equals("today")) colorText = "text-green-500";
+                                else if(status.Equals("future")) colorText = "text-blue-500";
+                                else colorText = "text-red-500/60";
+                            }
+                                 <div class=" @colorText text-sm"><span class="font-medium">@status</span> • <i class="uil uil-schedule "></i> @Convert.ToDateTime(ta.DueDate).ToString(" ddd, MMM dd yyyy") </div>
+                            </div>
+
+                            <div onclick="btnClick(2, @ta.Id)" class="col-span-1 flex items-center justify-end text-3xl text-[#444444] "><i class="uil uil-angle-right"></i></div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="~/js/TaskTableInOut.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://unpkg.com/@@material-tailwind/html@latest/scripts/dialog.js"></script>

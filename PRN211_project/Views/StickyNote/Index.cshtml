@@ -15,6 +15,8 @@
     <script src="~/js/tinymce/tinymce.min.js" referrerpolicy="origin"></script>
 
 
+
+
 </head>
 <body class="overflow-hidden">
     <div class="m-5 bg-white h-[80vh] grid grid-cols-4">
@@ -61,7 +63,7 @@
                                         Cancel
                                     </button>
                                     <button type="submit" data-ripple-light="true" data-dialog-close="true"
-                                            class="hidden middle none center rounded-lg  py-3 px-6 font-sans text-xs font-bold uppercase text-black hover:text-blue-500 ">
+                                            class="middle none center rounded-lg  py-3 px-6 font-sans text-xs font-bold uppercase text-black hover:text-blue-500 ">
                                         <i class="uil uil-upload text-xl"></i>
                                     </button>
                                 </div>
@@ -94,12 +96,8 @@
                                        value=""
                                        class="m-5 bg-transparent border-0 outline-0 focus:border-b-2 flex items-center  font-sans text-2xl antialiased font-semibold leading-snug shrink-0 text-blue-gray-900" />
                                 <div class="relative p-4 font-sans text-base antialiased font-medium leading-relaxed   text-neutral-700">
-                                    <script>
-                                        tinymce.init({
-                                            selector: '#textareaw'
-                                        });
-                                    </script>
-                                    <textarea id="textareaw" placeholder="enter something here"
+
+                                    <textarea placeholder="enter something here"
                                               name="Details"
                                               class="w-full px-5 h-fit bg-transparent border-none  shadow-transparent outline-none overflow-auto box" rows="4"></textarea>
                                 </div>

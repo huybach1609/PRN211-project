@@ -104,7 +104,8 @@
 
                                                 @{
 
-                                                    List<PRN211_project.Models.Task> tasks = PRN211_projectContext.Ins.Tasks.Where(x => x.ListId == l.Id).ToList();
+                                                    
+                                                        List<PRN211_project.Models.Task> tasks = new PRN211_projectContext().Tasks.Where(x => x.ListId == l.Id).ToList();
                                                 }
                                                 @if (tasks != null)
                                                 {
@@ -128,7 +129,7 @@
                                                                                   clip-rule="evenodd"></path>
                                                                         </svg>
                                                                     </span>
-                                                             
+
                                                                 </label>
                                                             </div>
 

@@ -7,22 +7,20 @@ using PRN211_project.Models;
 
 namespace PRN211_project.Fillters
 {
-    public class AuthenticationFillter : IActionFilter
+    public class AuthFilter: IActionFilter
     {
         public void OnActionExecuted(ActionExecutedContext context)
         {
 
         }
+
         public void OnActionExecuting(ActionExecutingContext context)
         {
-            // Access HttpContext through the context parameter
             var httpContext = context.HttpContext;
-
             var sesUserJson = httpContext.Session.GetString("sesUser");
-
-            if (sesUserJson == null)
+            if (sesUserJson != null)
             {
-                context.Result = new RedirectToActionResult("login", "auth", null);
+                context.Result = new RedirectToActionResult("", "home", null);
                 return;
             }
         }
