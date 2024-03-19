@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Diagnostics;
 using Microsoft.Build.Framework;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using Newtonsoft.Json;
 using NuGet.Protocol;
 using PRN211_project.Fillters;
@@ -17,12 +19,15 @@ namespace PRN211_project.Controllers
             return View();
         }
 
+
+
+
         public IActionResult Show()
         {
             using (PRN211_projectContext context = new PRN211_projectContext())
             {
-                ViewData["Title"] = "Show All Task";
-                ViewData["Head"] = "All Task";
+                ViewData["Title"] = "Show All Tasks";
+                ViewData["Head"] = "All Tasks";
                 Account acc = JsonConvert.DeserializeObject<Account>(HttpContext.Session.GetString("sesUser"));
                 List<Models.Task> tasks = context.Tasks.Where(x => x.List.AccountId == acc.Id).ToList();
                 List<Models.List> lists = context.Lists.Where(x => x.AccountId == acc.Id).ToList();
@@ -40,8 +45,8 @@ namespace PRN211_project.Controllers
             {
                 context.Tasks.Add(input);
                 context.SaveChanges();
-            }
 
+            }
             return input.ToString();
         }
 
@@ -82,7 +87,7 @@ namespace PRN211_project.Controllers
             return Redirect("/task/show");
         }
         [HttpPost]
-        public string Update(Models.Task input)
+        public string Update(Models.Task input, List<int> tagIds)
         {
             string jsonString = "";
             using (PRN211_projectContext context = new PRN211_projectContext())
@@ -95,6 +100,23 @@ namespace PRN211_project.Controllers
                     task.Status = input.Status;
                     task.ListId = input.ListId;
                     task.DueDate = input.DueDate;
+
+                    // Remove existing tags
+
+                    List<TagsTask> tagsTasksToDelete = context.TagsTasks.Where(tt => tt.TaskId == task.Id).ToList();
+                    context.TagsTasks.RemoveRange(tagsTasksToDelete);
+
+                    ICollection<TagsTask> tagsTasks= new List<TagsTask>();
+                    for (int i = 0; i < tagIds.Count(); i++)
+                    {
+                        TagsTask tagTask = new TagsTask();
+                        tagTask.TagsId = tagIds[i];
+                        tagTask.TaskId = task.Id;
+                        tagsTasks.Add(tagTask);
+                    }
+
+                    task.TagsTasks = tagsTasks;
+                    task.SubTasks = input.SubTasks;
                     context.SaveChanges();
                 }
                 var settings = new JsonSerializerSettings

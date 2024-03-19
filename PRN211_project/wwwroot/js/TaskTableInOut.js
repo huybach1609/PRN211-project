@@ -112,8 +112,8 @@ function checkBoxHandle(checkId) {
     });
 }
 function openNav() {
-    document.getElementById("mySidebar").style.width = "500px";
-    document.getElementById("main").style.marginRight = "500px";
+    document.getElementById("mySidebar").style.width = "450px";
+    document.getElementById("main").style.marginRight = "450px";
 }
 
 function closeNav() {

@@ -1,4 +1,5 @@
 ﻿@using PRN211_project.Commons
+@using PRN211_project.Models
 @*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
@@ -82,7 +83,7 @@
 
                     @foreach (PRN211_project.Models.Task ta in ViewBag.Tasks)
                     {
-                        <div class="border-b-[1px] h-16 min-h-16 grid grid-cols-10">
+                        <div class="border-b-[1px] h-fit py-3 min-h-16 grid grid-cols-10">
                             <div class=" col-span-1 flex items-center justify-center">
                                 <label class="relative flex items-center p-2 rounded-full cursor-pointer" htmlFor="customStyle">
                                     <input type="checkbox"
@@ -112,7 +113,25 @@
                                 else colorText = "text-red-500/60";
                             }
                                  <div class=" @colorText text-sm"><span class="font-medium">@status</span> • <i class="uil uil-schedule "></i> @Convert.ToDateTime(ta.DueDate).ToString(" ddd, MMM dd yyyy") </div>
+
+ <div class="flex gap-2">
+                                @using(PRN211_projectContext context = new PRN211_projectContext()){
+
+                                    var tags= (from tag in context.Tags
+                   join tt in context.TagsTasks on tag.Id equals tt.TagsId
+                   join t in context.Tasks on tt.TaskId equals t.Id
+                   where t.Id == ta.Id 
+                   select tag).ToList();
+
+                                                                             @foreach(PRN211_project.Models.Tag tag in tags){
+                                              <span class=" grid select-none w-fit items-center nowrap rounded-lg my-3 py-1.5 px-3 font-sans text-xs font-bold uppercase bg-stone-700  text-white">
+                                                <span class="">@tag.Name</span>
+                                              </span>
+                                        }
+                                }
                             </div>
+                            </div>
+
 
                             <div onclick="btnClick(2, @ta.Id)" class="col-span-1 flex items-center justify-end text-3xl text-[#444444] "><i class="uil uil-angle-right"></i></div>
                         </div>
@@ -124,3 +143,5 @@
     <script src="~/js/TaskTableInOut.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script src="https://unpkg.com/@@material-tailwind/html@latest/scripts/dialog.js"></script>
+
+

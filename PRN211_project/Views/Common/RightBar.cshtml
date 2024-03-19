@@ -101,24 +101,25 @@
                    type="hidden" name="Id" value="" /><br />
         </div>
         <div class="w-[90%]  mx-auto mb-5">
-               <div id="tagshow"></div> 
+            <div id="tagshow"></div>
 
             <button id="dropdownDividerButton" data-dropdown-toggle="dropdownDivider"
                     class="" type="button">
-                Add Tag 
+                Add Tag
             </button>
 
             <!-- Dropdown menu -->
-            <div id="dropdownDivider" class="z-10 hidden h-32 overflow-y-scroll bg-white divide-y divide-gray-100 rounded-lg shadow w-44 ">
-                <ul class="py-2 text-sm text-gray-700" aria-labelledby="dropdownDividerButton">
-                    @foreach (Tag tag in ViewBag.Tags)
-                    {
-                        <li>
-                            <a class="block px-4 py-2 hover:bg-gray-100 ">@tag.Name </a>
-                        </li>
-                    }
-                </ul>
-            </div>
+                <div id="dropdownDivider" class="z-10 hidden h-32 overflow-y-scroll bg-white divide-y divide-gray-100 rounded-lg shadow w-44 ">
+                    <ul class="py-2 text-sm text-gray-700" aria-labelledby="dropdownDividerButton">
+                        @foreach (Tag tag in ViewBag.Tags)
+                        {
+                            <div class="block px-4 py-2 hover:bg-gray-100">
+                                <input type="checkbox" name="tagIds" value="@tag.Id" id="tag-@tag.Id" />
+                                <label class="px-2" for="tag-@tag.Id">@tag.Name </label>
+                            </div>
+                        }
+                    </ul>
+                </div>
         </div>
         <div class="w-[90%] grid grid-cols-2 gap-4 m-auto">
             <button type="reset" id="resetBtn" class="hidden"></button>

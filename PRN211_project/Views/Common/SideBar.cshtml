@@ -20,8 +20,7 @@
 
 }
 @* sidebar *@
-<div class="col-span-1 h-[96vh] min-h-[800px]  bg-stone-50 rounded-3xl grid grid-rows-10 gap-2 divide divide-y px-5 py-2">
-    @* heading *@
+<div class="backdrop-blur-sm bg-stone-50/60 z-[99]  col-span-1 w-[24vw] h-[100vh] overflow-y-scroll rounded-3xl grid grid-rows-10 gap-2 divide divide-y px-5 py-2"> @* heading *@
     <div class="row-start-1 row-end-2">
         <p class="text-2xl font-bold leading-7 text-neutral-700 sm:truncate sm:text-3xl sm:tracking-tight p-2">
             <a>Menu</a>
@@ -30,22 +29,25 @@
                class="block ml-2 w-2/3 rounded-md border-0 py-1.5 pl-3 pr-20 bg-transparent text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-amber-600 sm:text-sm sm:leading-6" placeholder="Search">
     </div>
     @* task *@
-    <div class="row-span-3  mt-4 mx-2 pt-3">
+    <div class="row-span-3  mt-4 mx-2 pt-3 h-[27vh] overflow-y-scroll">
         <p class="font-medium text-sm">TASKS</p>
-        <div 
-             class="grid grid-row-4 gap-1  mt-3 ml-1">
+        <div class=" active:text-amber-900 pl-2 p-1 mt-1  text-sm rounded-xl font-medium flex items-center">
+            <i class="text-xl font-light "></i>
+            <a href="/task/show" class="ml-2 hover:text-amber-300">View All</a>
+        </div>
+        <div class="grid grid-row-4 gap-1  mt-1 ml-1">
             <div onclick="window.location.href='/task/time?id=0&time=1';"
-                class="hover:bg-amber-50 active:bg-amber-950 active:text-amber-50 pl-2 p-1  text-sm rounded-xl font-medium flex items-center">
+                 class="hover:bg-amber-50 active:bg-amber-950 active:text-amber-50 pl-2 p-1  text-sm rounded-xl font-medium flex items-center">
                 <i class="text-xl font-light uil uil-angle-double-right"></i>
                 <span class="ml-2">Up Coming</span>
             </div>
             <div onclick="window.location.href='/task/time?id=0&time=0';"
-                class="hover:bg-amber-50 active:bg-amber-950 active:text-amber-50 pl-2  p-1  text-sm rounded-xl font-medium flex items-center">
+                 class="hover:bg-amber-50 active:bg-amber-950 active:text-amber-50 pl-2  p-1  text-sm rounded-xl font-medium flex items-center">
                 <i class="text-xl uil uil-clipboard"></i>
                 <span class="ml-2">Today</span>
             </div>
             <div onclick="window.location.href='/task/time?id=0&time=-1';"
-                class="hover:bg-amber-50 active:bg-amber-950 active:text-amber-50 pl-2  p-1 text-sm rounded-xl font-medium flex items-center">
+                 class="hover:bg-amber-50 active:bg-amber-950 active:text-amber-50 pl-2  p-1 text-sm rounded-xl font-medium flex items-center">
                 <i class="text-xl  uil uil-calender"></i>
                 <span class="ml-2">Missed</span>
             </div>
@@ -54,40 +56,34 @@
                 <i class="text-xl uil uil-comment-alt-notes"></i>
                 <span class="ml-2">Sticky note</span>
             </div>
-            <div class=" active:text-amber-900 pl-2 p-1  text-sm rounded-xl font-medium flex items-center">
-                <i class="text-xl font-light "></i>
-                <a href="/task/show" class="ml-2">View All</a>
-            </div>
 
         </div>
     </div>
     @* list *@
     <div class="row-span-3 mt-2 mx-2 pt-3">
         <p class="font-medium text-sm">LISTS</p>
-        <div class="grid grid-row-4 gap-1 mt-3 ml-1 overflow-y-scroll h-[200px] pb-5">
-            @{
-                int countList = list1.Count;
-                if (countList > 3)
-                {
-                    countList = 3;
-                }
-            }
-
-            @for (int i = 0; i < list1.Count; i++)
-            {
-                int code = rnd.Next(0, colors.Count - 1);
-                <div onclick="window.location.href = '/task/listShow?id='+@list1[i].Id" class="hover:bg-amber-50 active:bg-amber-950 active:text-amber-50 pl-2 p-1  text-sm rounded-xl font-medium flex items-center">
-                    <span class="bg-[@(colors[code])]  w-5 h-5 m-1 rounded"></span>
-                    <span class="ml-2">@list1[i].Name </span>
-                </div>
-
-            }
+        <div class="grid grid-row-4 gap-1 mt-3 ml-1 overflow-y-scroll h-[23vh] pb-5">
             <div>
                 <div class=" active:text-amber-900 pl-2 p-1  text-sm rounded-xl font-medium flex items-center">
                     <i class="text-xl font-light "></i>
-                    <a href="/list" class="ml-2">View All</a>
+                    <a href="/list" class="ml-2 hover:text-amber-300">View All</a>
                 </div>
             </div>
+            @for (int i = 0; i < list1.Count; i++)
+            {
+                int taskNumber = 0;
+                @using (PRN211_projectContext context = new PRN211_projectContext())
+                {
+                    taskNumber = context.Tasks.Where(x => x.ListId == list1[i].Id).ToList().Count;
+                }
+                int code = rnd.Next(0, colors.Count - 1);
+                <div onclick="window.location.href = '/task/listShow?id='+@list1[i].Id"
+                     class="grid grid-cols-10 hover:bg-amber-50 active:bg-amber-950 active:text-amber-50 pl-2 p-1  text-sm rounded-xl font-medium ">
+                    <span class=" col-span-1 bg-[@(colors[code])] w-5 h-5 m-1 rounded"></span>
+                    <span class="col-span-7 ml-2">@list1[i].Name </span>
+                    <span class="col-span-1 cursor-no-drop text-[10px] text-amber-50 w-[20px] h-[20px] flex justify-center items-center py-0 w-fit bg-[@(colors[code])]  rounded">@taskNumber</span>
+                </div>
+            }
         </div>
     </div>
     @* tags *@
@@ -104,10 +100,7 @@
             }
 
         </div>
-        <div class=" active:text-amber-900 my-2  text-sm rounded-xl font-medium flex items-center">
-            <i class="text-xl font-light "></i>
-            <span class="ml-2">View All</span>
-        </div>
+
     </div>
 
     @* setting *@

@@ -17,27 +17,122 @@
         @* sidebar *@
         @Html.Partial("~/Views/Common/SideBar.cshtml")
 
-        <div class="flex items-center col-span-3 h-10/12  rounded-3xl p-10 overflow-scroll bg-black">
-            <div class="m-auto w-80 grid grid-cols-4 ">
-                <div class="h-20 col-span-2 border-[0.5px] flex justify-center items-center text-white border-amber-50">you hex id <span id="hexId" class=""> </span></div>
-                @foreach (string id in alo)
-                {
-                    <div onmouseover="changeText('@id');" class="h-20 col-span-1 text-stone-700 flex font-bold justify-center items-center hover:text-[@id] border-[0.5px] border-amber-50">next</div>
-                }
-            </div>
+        @*   <div class="flex items-center col-span-3 h-10/12  rounded-3xl p-10 overflow-scroll bg-black">
+        <div class="m-auto w-80 grid grid-cols-4 ">
+        <div class="h-20 col-span-2 border-[0.5px] flex justify-center items-center text-white border-amber-50">you hex id <span id="hexId" class=""> </span></div>
+        @foreach (string id in alo)
+        {
+        <div onmouseover="changeText('@id');" class="h-20 col-span-1 text-stone-700 flex font-bold justify-center items-center hover:text-[@id] border-[0.5px] border-amber-50">next</div>
+        }
+        </div>
         </div>
         <script>
-            function changeText(id) {
-                var textHex = document.querySelector("#hexId")
-                var no = "<span class='transition ease-in-out delay-150 text-[";
-                no += id;
-                no += "]'> "
-                no += id + "</span>"
-                console.log(no);
-                textHex.innerHTML = no;
-            }
-        </script>
+        function changeText(id) {
+        var textHex = document.querySelector("#hexId")
+        var no = "<span class='transition ease-in-out delay-150 text-[";
+        no += id;
+        no += "]'> "
+        no += id + "</span>"
+        console.log(no);
+        textHex.innerHTML = no;
+        }
+        </script> *@
 
+        <div class="items-center col-span-3 h-10/12  rounded-3xl p-10 overflow-scroll bg-white overflow-y-scroll">
+            <section class="m-10">
+                <div class="p-10 rounded-l-xl border border-blue-gray-100 bg-[url('/image/gradient-bg-1.png')] rounded-xl bg-no-repeat lg:bg-contain bg-cover bg-right">
+                    <p class="block antialiased font-sans text-sm font-light leading-normal text-blue-gray-900 font-bold mb-2">
+                        Upcoming Events
+                    </p>
+                    <h3 class="block antialiased tracking-normal font-sans text-3xl font-semibold leading-snug text-blue-gray-900">
+                        Tech Summit: Shaping Tomorrow
+                    </h3>
+                    <p class="block antialiased font-sans text-base font-light leading-relaxed text-inherit mt-2 mb-6 !text-base font-normal text-gray-500">
+                        Prepare to be part of dynamic conversations that will redefine the
+                        boundaries.
+                    </p>
+                    <button class="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg border border-gray-900 text-gray-900 hover:opacity-75 focus:ring focus:ring-gray-300 active:opacity-[0.85] flex-shrink-0"
+                            type="button"
+                            data-ripple-dark="true">
+                        join now
+                    </button>
+                </div>
+            </section>
+            <section class="bg-white dark:bg-gray-900">
+                <div class="gap-16 items-center py-8 px-4 mx-auto max-w-screen-xl lg:grid lg:grid-cols-2 lg:py-16 lg:px-6">
+                    <div class="font-light text-gray-500 sm:text-lg dark:text-gray-400">
+                        <h2 class="mb-4 text-4xl tracking-tight font-extrabold text-gray-900 dark:text-white">We didn't reinvent the wheel</h2>
+                        <p class="mb-4">We are strategists, designers and developers. Innovators and problem solvers. Small enough to be simple and quick, but big enough to deliver the scope you want at the pace you need. Small enough to be simple and quick, but big enough to deliver the scope you want at the pace you need.</p>
+                        <p>We are strategists, designers and developers. Innovators and problem solvers. Small enough to be simple and quick.</p>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4 mt-8">
+                        <img class="w-full rounded-lg" src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/content/office-long-2.png" alt="office content 1">
+                        <img class="mt-4 w-full lg:mt-10 rounded-lg" src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/content/office-long-1.png" alt="office content 2">
+                    </div>
+                </div>
+            </section>
+            <section class="container mx-auto px-8 py-10 lg:py-28">
+                <h2 class="block antialiased tracking-normal font-sans font-semibold text-blue-gray-900 !text-2xl !leading-snug lg:!text-3xl">
+                    Build something great
+                </h2>
+                <p class="block antialiased font-sans text-xl leading-relaxed text-inherit mt-2 max-w-lg !font-normal !text-gray-500">
+                    We're constantly trying to express ourselves and actualize our dreams. If
+                    you have the opportunity to play this game of life you need to appreciate
+                    every moment.
+                </p>
+                <div class="mt-10 grid grid-cols-1 gap-10 lg:grid-cols-3">
+                    <div class="flex-col bg-clip-border bg-transparent text-gray-700 shadow-md relative grid min-h-[30rem] items-end overflow-hidden rounded-xl">
+                        <img src="https://www.material-tailwind.com/image/blog-11.jpeg"
+                             alt="bg"
+                             class="absolute inset-0 h-full w-full object-cover object-center" />
+                        <div class="absolute inset-0 bg-black/70"></div>
+                        <div class="p-6 relative flex flex-col justify-end">
+                            <h4 class="block antialiased tracking-normal font-sans text-2xl font-semibold leading-snug text-white">
+                                Search and Discovery
+                            </h4>
+                            <p class="block antialiased font-sans text-base leading-relaxed text-white my-2 font-normal">
+                                Website visitors today demand a frictionless user expericence —
+                                especially when using search. Because of the hight standards we tend
+                                to offer.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="flex-col bg-clip-border bg-transparent text-gray-700 shadow-md relative grid min-h-[30rem] items-end overflow-hidden rounded-xl">
+                        <img src="https://www.material-tailwind.com/image/blog-10.jpeg"
+                             alt="bg"
+                             class="absolute inset-0 h-full w-full object-cover object-center" />
+                        <div class="absolute inset-0 bg-black/70"></div>
+                        <div class="p-6 relative flex flex-col justify-end">
+                            <h4 class="block antialiased tracking-normal font-sans text-2xl font-semibold leading-snug text-white">
+                                Last visits in US
+                            </h4>
+                            <p class="block antialiased font-sans text-base leading-relaxed text-white my-2 font-normal">
+                                Wealth creation is an evolutionarily recent positive-sum game. Status
+                                is an old zero-sum game. Those attacking wealth creation are often
+                                just seeking status.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="flex-col bg-clip-border bg-transparent text-gray-700 shadow-md relative grid min-h-[30rem] items-end overflow-hidden rounded-xl">
+                        <img src="https://demos.creative-tim.com/material-kit-pro/assets/img/examples/card-blog2.jpg"
+                             alt="bg"
+                             class="absolute inset-0 h-full w-full object-cover object-center" />
+                        <div class="absolute inset-0 bg-black/70"></div>
+                        <div class="p-6 relative flex flex-col justify-end">
+                            <h4 class="block antialiased tracking-normal font-sans text-2xl font-semibold leading-snug text-white">
+                                Grow in a beautiful area
+                            </h4>
+                            <p class="block antialiased font-sans text-base leading-relaxed text-white my-2 font-normal">
+                                Free people make free choices. Free choices mean you get unequal
+                                outcomes. You can have freedom, or you can have equal outcomes. You
+                                can't have both.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
     </div>
 </body>
 </html>

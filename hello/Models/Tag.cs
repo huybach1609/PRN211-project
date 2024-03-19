@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace PRN211_project.Models
+namespace hello.Models
 {
     public partial class Tag
     {
