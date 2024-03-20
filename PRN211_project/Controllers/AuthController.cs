@@ -70,7 +70,7 @@ namespace PRN211_test.Controllers
                     {
                         return RedirectToAction("list", "account");
                     }
-                    return RedirectToAction("", "home");
+                    return RedirectToAction("", "list");
                 }
             }
             ViewBag.Mess = "login fail";
