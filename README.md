@@ -23,7 +23,7 @@
 
   <p align="center">
     <br />
-    <a href="https://www.origanicmind.somee.com/">View Demo</a>
+    <a href="http://www.origanicmind.somee.com/">View Demo</a>
     ·
     <a href="https://github.com/huybach1609/PRN211-project/issues">Report Bug</a>
     ·
