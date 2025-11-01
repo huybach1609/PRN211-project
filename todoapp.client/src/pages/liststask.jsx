@@ -23,7 +23,7 @@ export const ListTaskView = () => {
     useEffect(() => {
         GetListAccount()
             .then(response => {
-                console.log(response);
+                //console.log(response);
                 setList(response.data);
             }).catch();
     }, [])
@@ -31,7 +31,7 @@ export const ListTaskView = () => {
     const handleOpen = (item = { id: 0, name: '', tasks: [] }, isAddStatus) => {
         setSelectedItem(item);
         setIsAdd(isAddStatus);
-        console.log(selectedItem);
+        //console.log(selectedItem);
         onOpen();
     };
     const checkedDate = (time) => {
@@ -53,11 +53,11 @@ export const ListTaskView = () => {
         });
     };
     const UpdateList = () => {
-        console.log(selectedItem);
+        //console.log(selectedItem);
         UpdateListAxios(selectedItem)
             .then(response => {
                 if (response.data.status) {
-                    console.log(response);
+                    //console.log(response);
                     addToast({ title: response.data.message, color: "success" });
 
                     var updateList = list.map(element => {
@@ -80,7 +80,7 @@ export const ListTaskView = () => {
 
     }
     const CreateList = () => {
-        console.log(selectedItem);
+        //console.log(selectedItem);
         CreateListAxios(selectedItem)
             .then(response => {
                 if (response.data.status) {

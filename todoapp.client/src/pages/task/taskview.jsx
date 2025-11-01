@@ -21,7 +21,7 @@ export const TaskView = () => {
             fetchDataTask(type)
                 .then(response => {
                     setTasks(response.data.tasks);
-                    console.log(response);
+                    //console.log(response);
                 }).catch(error => {
                     navigate("/")
                 })
@@ -45,7 +45,7 @@ export const TaskView = () => {
     const [isOpen, setOpen] = useState(false);
 
     const handleRightBar = (task) => {
-        console.log(task);
+        //console.log(task);
         setOpen(true);
         setTaskIdSelect(task.id);
     }
@@ -53,7 +53,7 @@ export const TaskView = () => {
     const checkBoxHandle = (taskId, status) => {
         fetchSetStatus(taskId, status)
             .then(response => {
-                console.log(response)
+                //console.log(response)
             })
             .catch();
     }

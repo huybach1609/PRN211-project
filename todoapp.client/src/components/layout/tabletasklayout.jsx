@@ -36,7 +36,7 @@ const TableTaskLayout = ({ title = 'tasks', tasksQuery = [] }) => {
     const [isOpen, setOpen] = useState(false);
 
     const handleRightBar = (task) => {
-        console.log(task);
+        // //console.log(task);
         setOpen(true);
         setTaskIdSelect(task.id);
     }
@@ -44,7 +44,7 @@ const TableTaskLayout = ({ title = 'tasks', tasksQuery = [] }) => {
     const checkBoxHandle = (taskId, status) => {
         fetchSetStatus(taskId, status)
             .then(response => {
-                console.log(response)
+                // //console.log(response)
             })
             .catch();
     }

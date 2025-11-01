@@ -67,7 +67,7 @@ function TaskLayout({ isOpen, setOpen, taskId = 0, onTaskSaved }) {
 
                     if (listResponse.data && listResponse.data.length > 0) {
                         // setListId();
-                        console.log(listResponse.data[0].id);
+                        // //console.log(listResponse.data[0].id);
                         setListId(listResponse.data[0].id);
                     }
                     setSelectedTags(new Set());
@@ -217,7 +217,7 @@ function TaskLayout({ isOpen, setOpen, taskId = 0, onTaskSaved }) {
     };
 
     // useEffect(() => {
-    //     console.log("Current listId:", dueDate);
+    //     //console.log("Current listId:", dueDate);
     // }, [dueDate]);
 
     const handleListChange = (e) => {
@@ -304,7 +304,7 @@ function TaskLayout({ isOpen, setOpen, taskId = 0, onTaskSaved }) {
                             value={parseDate(dueDate)}
                             onChange={(value) => {
                                 var da = `${value.year}-${String(value.month).padStart(2, '0')}-${String(value.day).padStart(2, '0')}`;
-                                console.log("da: ", da);
+                                // //console.log("da: ", da);
                                 setDueDate((da));
                             }}
                             showMonthAndYearPickers
@@ -333,7 +333,7 @@ function TaskLayout({ isOpen, setOpen, taskId = 0, onTaskSaved }) {
                             selectedKeys={selectedTags}
                             selectionMode="multiple"
                             onSelectionChange={(keys) => {
-                                console.log(keys);
+                                // //console.log(keys);
                                 setSelectedTags(keys);
                             }}
                         >

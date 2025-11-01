@@ -19,6 +19,7 @@ import { TaskListView } from "./pages/task/tasklistview";
 import { TaskView } from "./pages/task/taskview";
 import TaskTimeFilter from "./pages/task/tasktimefilter";
 import { StickyNote } from "lucide-react";
+import ErrorPage from "./pages/error";
 
 
 // Loading component
@@ -31,7 +32,7 @@ const PageLoader = () => (
 const App = () => {
   const user = getUser() ? JSON.parse(getUser()) : null;
   const name = user?.userName || "";
-  console.log(name);
+  // //console.log(name);
 
   return (
     <Suspense fallback={<PageLoader />}>
@@ -64,6 +65,10 @@ const App = () => {
         <Route element={<NoAuthRoute />}>
           <Route path="/auth" element={<AuthPage />} />
         </Route>
+
+        {/* Error Routes */}
+        <Route path="/error" element={<ErrorPage />} />
+        <Route path="/error/:type" element={<ErrorPage />} />
       </Routes>
     </Suspense>
   );

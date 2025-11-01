@@ -17,7 +17,7 @@ import { GetListAccount, GetNumOfTaskInfo } from "../../services/listservice";
 export const UseSelectionView = () => {
     const { theme, setTheme } = useTheme();
     const user = JSON.parse(getUser());
-    // console.log(user.userName);
+    // //console.log(user.userName);
     const navigate = useNavigate();
     return (
         <Listbox
@@ -65,7 +65,7 @@ const HeadingBar = () => {
 
 export const GetTags = async () => {
     const user = JSON.parse(getUser());
-    return await axios.get(API_URL + `/api/tags/user/${user.id}`,
+    return await axios.get(API_URL + `/tags/user/${user.id}`,
         {
             headers: {
                 'Content-Type': 'application/json',
@@ -80,7 +80,7 @@ export const GetTags = async () => {
 export const SideBar = ({ isOpen }) => {
     const [lists, setLists] = useState([]);
     const [tags, setTags] = useState([]);
-    // useEffect(() => { console.log(theme) }, [theme]);
+    // useEffect(() => { //console.log(theme) }, [theme]);
     const navigate = useNavigate();
     useEffect(() => {
         const fetchData = async () => {
@@ -89,7 +89,7 @@ export const SideBar = ({ isOpen }) => {
 
             const tagsResponse = await GetTags();
             setTags(tagsResponse.data || []);
-            // console.log(data.data);
+            // //console.log(data.data);
         }
         fetchData();
     }, [])
@@ -110,7 +110,7 @@ export const SideBar = ({ isOpen }) => {
                 tasks.map(async (task) => {
                     try {
                         const response = await GetNumOfTaskInfo(task.timestamp, 0);
-                        console.log(`Raw API Response for ${task.label}:`, response); // Debugging
+                        // //console.log(`Raw API Response for ${task.label}:`, response); // Debugging
 
                         const count = response.data ?? 0; // Extract only the `data`
                         return { key: task.key, count };
@@ -125,7 +125,7 @@ export const SideBar = ({ isOpen }) => {
             setTaskCounts(Object.fromEntries(counts.map(({ key, count }) => [key, count])));
         };
         fetchCounts();
-        console.log("helelele", taskCounts);
+        // //console.log("helelele", taskCounts);
     }, []);
 
 
@@ -155,7 +155,7 @@ export const SideBar = ({ isOpen }) => {
                     <Listbox aria-label="Actions" onAction={(key) => navigate(key)}>
 
                         {lists.slice(0, 4).map((item) => {
-                            console.log(item.tasks.length)
+                            // //console.log(item.tasks.length)
                             return (
                                 ListboxItemView(item.name, `/task/list/${item.id}`, item.color, item.tasks.length)
                             )

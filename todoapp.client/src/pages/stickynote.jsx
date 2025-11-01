@@ -17,7 +17,7 @@ export const StickyNote = () => {
         const fetchSt = async () => {
             try {
                 const data = await fetchDataSn();
-                console.log(data);
+                //console.log(data);
                 setSt(data.data)
             } catch (error) {
                 console.error("Failed to load account info:", error);
@@ -46,7 +46,7 @@ export const StickyNote = () => {
     const CreateSn = async () => {
         fetchCreateSn(selectedItem)
             .then(response => {
-                console.log(response);
+                //console.log(response);
                 setSt(preSt => [...preSt, response.data.obj])
 
             })
@@ -55,7 +55,7 @@ export const StickyNote = () => {
 
     const UpdateSn = async () => {
         fetchUpdateSn(selectedItem).then((response) => {
-            console.log(response)
+            //console.log(response)
             if (response.data.status) {
                 addToast({ title: response.data.message, color: "success" });
                 var updatest = st.map(element => {
@@ -72,7 +72,7 @@ export const StickyNote = () => {
             }
 
         }).catch((err) => {
-            console.log(err);
+            //console.log(err);
         });
     };
 

@@ -11,9 +11,12 @@ import { useNavigate } from "react-router-dom";
 const LoginForm = () => {
 
     const processLogin = (username, password) => {
+        //console.log(username, password);
+        //console.log(API_URL);
+        console.log(API_URL + '/auth/login');
         console.log(username, password);
         return axios
-            .post(API_URL + '/api/auth/login',
+            .post(API_URL + '/auth/login',
                 { username, password },
                 {
                     headers: {
@@ -28,12 +31,12 @@ const LoginForm = () => {
 
         var username = e.target.username.value;
         var password = e.target.password.value;
-        console.log(username, password);
+        //console.log(username, password);
 
         processLogin(username, password).then((response) => {
-            console.log(response.data);
+            //console.log(response.data);
             if (response.data.success) {
-                console.log(response.data.message);
+                //console.log(response.data.message);
                 addToast({
                     title: response.data.message,
                     promise: new Promise((resolve) => setTimeout(resolve, 3000))
@@ -51,7 +54,7 @@ const LoginForm = () => {
         }).catch((error) => {
             if (error.response) {
                 // Handle known errors (like 400 Bad Request)
-                console.log('Error:', error.response.data.message);
+                //console.log('Error:', error.response.data.message);
                 addToast({ title: error.response.data.message, color: "danger" });
             } else {
                 // Handle network errors or unexpected issues

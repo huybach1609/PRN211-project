@@ -9,9 +9,9 @@ import { useNavigate } from "react-router-dom";
 export const GetAccountInfor = async () => {
     try {
         const user = JSON.parse(getUser());
-        // console.log(user.userName);
+        // //console.log(user.userName);
         var resposne = await axios
-            .get(API_URL + `/api/accounts/${user.userName}`,
+            .get(API_URL + `/accounts/${user.userName}`,
                 {
                     headers: {
                         'Content-Type': 'application/json',

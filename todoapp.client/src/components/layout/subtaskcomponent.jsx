@@ -21,7 +21,7 @@ export const SubtaskComponent = ({ subtasksImport = [], taskId }) => {
         }
 
         fetchAddSubTask(request).then(response => {
-            console.log(response);
+            // //console.log(response);
             if (newSubtask.name) {
                 setSubtasks([
                     ...subtasks,
@@ -37,7 +37,7 @@ export const SubtaskComponent = ({ subtasksImport = [], taskId }) => {
         setSubtasks(subtasks.filter(subtask => subtask.id !== id));
         // process delete in backend 
         fetchDeleteSubTask(id).then(response => {
-            console.log(response);
+            // //console.log(response);
         });
     };
 
@@ -60,7 +60,7 @@ export const SubtaskComponent = ({ subtasksImport = [], taskId }) => {
 
             fetchUpdateSubTask(updatedSubtask)
                 .then(response => {
-                    console.log(response);
+                    // //console.log(response);
                 })
         }
 

@@ -12,9 +12,9 @@ const SignupForm = ({ setIsLogin }) => {
     const [errors, setErrors] = React.useState({});
 
     const SignInProcess = (username, password, email) => {
-        console.log(`${username} ${password} ${email}`);
+        //console.log(`${username} ${password} ${email}`);
         return axios
-            .post(API_URL + '/api/auth/signup',
+            .post(API_URL + '/auth/signup',
                 { username, password, email },
                 {
                     headers: {
@@ -30,11 +30,11 @@ const SignupForm = ({ setIsLogin }) => {
         var password = e.target.password.value;
         var email = e.target.email.value;
 
-        console.log(`${username} ${password} ${email}`);
+        //console.log(`${username} ${password} ${email}`);
 
         SignInProcess(username, password, email)
             .then((response) => {
-                console.log(response);
+                //console.log(response);
 
                 addToast({
                     color: "success",
@@ -47,13 +47,13 @@ const SignupForm = ({ setIsLogin }) => {
                 }, 1000)
             })
             .catch((error) => {
-                console.log(error);
+                //console.log(error);
 
                 const data = error.response.data.message;
                 var errorMessage = "";
                 if (error.response.data?.message) {
                     errorMessage = data; // plain string error
-                    console.log(error.response.data.message);
+                    //console.log(error.response.data.message);
 
                 } else if (error.response.data.errors) {
                     if (error.response.data.errors.Username?.[0]) {
@@ -63,7 +63,7 @@ const SignupForm = ({ setIsLogin }) => {
                     } else if (error.response.data.errors.Email?.[0]) {
                         errorMessage += error.response.data.errors.Email?.[0];
                     }
-                    console.log(error.response.data.errors);
+                    //console.log(error.response.data.errors);
                 }
 
                 addToast({

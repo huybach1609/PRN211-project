@@ -15,7 +15,7 @@ const TaskTimeFilter = () => {
             fetchDataTask(type)
                 .then(response => {
                     setTasks(response.data.tasks);
-                    console.log(response);
+                    //console.log(response);
                 }).catch(error => {
                     navigate("/")
                 })

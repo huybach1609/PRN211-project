@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import LoginForm from './loginForm';
 import SignupForm from './signupForm';
 import { removeToken, removeUser } from '../../utils/tokenManage';
+import landing from '../../assets/png/landing.png';
 
 
 
@@ -50,7 +51,7 @@ const AuthPage = () => {
 
     const slideDistance = window.innerWidth * 0.5;
 
-    console.log(slideDistance);
+    //console.log(slideDistance);
 
     return (
         <div className="min-h-screen  p-8 flex h-96 items-center gap-8 justify-center">
@@ -90,7 +91,7 @@ const AuthPage = () => {
                 >
                     <EnterAnimation ball={ball} />
                     <img
-                        src="/src/assets/png/landing.png"
+                        src={landing}
                         alt="Beautiful landscape"
                         className="absolute inset-0 w-full h-full object-cover z-0"
                     />
