@@ -1,0 +1,48 @@
+networks:
+  app-network:
+    driver: bridge
+
+services:
+  # ================= ToDo-App API (internal only) =================
+  todoapp-server:
+    container_name: todoapp-server
+    build:
+      context: ./todoapp.server
+      dockerfile: Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Production"
+      ASPNETCORE_URLS: "http://+:5291"
+      # If you still hit CORS in dev, you can allow http://localhost:5273 inside your API,
+      # but with the NGINX proxy below, requests are same-origin so CORS isn't needed.
+      ConnectionStrings__Default: ${CONNDEFAULT}
+      ConnectionStrings__Remote: ${CONNREMOTE}
+
+      # JwtSettings
+      JwtSettings__SecretKey: ${JWTSECRETKEY}
+
+      # MailSettings
+      MailSettings__smtpServer: ${MAILSMTPSERVER}
+      MailSettings__port: ${MAILPORT}
+      MailSettings__username: ${MAILUSERNAME}
+      MailSettings__password: ${MAILPASSWORD}
+    expose:
+      - "5291" # internal-only
+    restart: unless-stopped
+    networks: [app-network]
+
+  # ================= Client (built → served by NGINX) =================
+  todoapp-client:
+    container_name: todoapp-client
+    build:
+      context: ./todoapp.client
+      dockerfile: Dockerfile
+    depends_on: [todoapp-server]
+    ports:
+      - "5273:5273"
+    restart: unless-stopped
+    networks: [app-network]
+    volumes:
+      - ./todoapp.client/public/env.js:/usr/share/nginx/html/env.js:ro
+
+volumes:
+  todoapp-db:
