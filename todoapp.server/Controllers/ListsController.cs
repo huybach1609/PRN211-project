@@ -4,9 +4,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
 using Microsoft.EntityFrameworkCore;
-using todoapp.server.Dtos.ListDto;
+using todoapp.server.Dtos.ListDtos;
 using todoapp.server.Models;
-using todoapp.server.Services;
+using todoapp.server.Services.Interfaces;
 
 namespace todoapp.server.Controllers
 {

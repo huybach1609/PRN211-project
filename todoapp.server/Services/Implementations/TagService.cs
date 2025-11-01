@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using SQLitePCL;
 using todoapp.server.Models;
 
-namespace todoapp.server.Services
+namespace todoapp.server.Services.Implementations
 {
     public class TagService
     {
@@ -13,7 +13,6 @@ namespace todoapp.server.Services
             _context = context;
         }
 
-        [HttpGet("user/{userId}")]
         public List<Tag> GetTagByUserId(int userId)
         {
             var tags = _context.Tags.Where(tag => tag.TagsTasks

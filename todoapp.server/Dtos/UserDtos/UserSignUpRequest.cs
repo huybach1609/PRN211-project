@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace todoapp.server.Dtos.UserDto
+namespace todoapp.server.Dtos.UserDtos
 {
     public class UserSignUpRequest
     {

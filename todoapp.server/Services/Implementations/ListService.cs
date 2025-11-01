@@ -2,10 +2,11 @@
 using Azure.Core;
 using Microsoft.EntityFrameworkCore;
 using NuGet.Protocol;
-using todoapp.server.Dtos.ListDto;
+using todoapp.server.Dtos.ListDtos;
 using todoapp.server.Models;
+using todoapp.server.Services.Interfaces;
 
-namespace todoapp.server.Services.iml
+namespace todoapp.server.Services.Implementations
 {
     public class ListService : IListService
     {

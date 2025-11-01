@@ -1,4 +1,4 @@
-﻿namespace todoapp.server.Dtos.UserDto
+﻿namespace todoapp.server.Dtos.UserDtos
 {
     public class UserSignUpResponse
     {

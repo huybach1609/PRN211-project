@@ -1,7 +1,7 @@
-﻿using todoapp.server.Dtos.ListDto;
+﻿using todoapp.server.Dtos.ListDtos;
 using todoapp.server.Models;
 
-namespace todoapp.server.Services
+namespace todoapp.server.Services.Interfaces
 {
     public interface IListService
     {

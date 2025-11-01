@@ -1,5 +1,8 @@
 ﻿using System.Net.Mail;
 using System.Net;
+using todoapp.server.Constants;
+using todoapp.server.Exceptions;
+
 
 namespace todoapp.server.Services.Mail
 {
@@ -13,10 +16,17 @@ namespace todoapp.server.Services.Mail
 
         public MailService(IConfiguration configuration)
         {
-            _smtpServer = configuration["MailSettings:smtpServer"];
-            _port = Convert.ToInt32(configuration["MailSettings:port"]);
-            _username = configuration["MailSettings:username"]; ;
-            _password = configuration["MailSettings:password"]; ;
+            _smtpServer = configuration[ConfigurationConstants.SmtServerMailSettings]
+               ?? throw new  EmptyConfigurationValueException();
+            _port = Convert.ToInt32(configuration[ConfigurationConstants.PortMailSettings]
+               ?? throw new  EmptyConfigurationValueException());
+                
+            _username = configuration[ConfigurationConstants.UsernameMailSettings] 
+               ?? throw new  EmptyConfigurationValueException();
+                
+            _password = configuration[ConfigurationConstants.PasswordMailSettings]
+               ?? throw new  EmptyConfigurationValueException();
+                
             _enableSsl = true;
         }
         public async Task SendMailAsync(string content, string to, string header)

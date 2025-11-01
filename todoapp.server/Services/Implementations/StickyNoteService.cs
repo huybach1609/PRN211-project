@@ -1,6 +1,7 @@
 ﻿using todoapp.server.Models;
+using todoapp.server.Services.Interfaces;
 
-namespace todoapp.server.Services.iml
+namespace todoapp.server.Services.Implementations
 {
     public class StickyNoteService : IStickyNoteService
     {

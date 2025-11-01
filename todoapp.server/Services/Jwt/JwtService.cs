@@ -1,8 +1,11 @@
-﻿using System.IdentityModel.Tokens.Jwt;
+﻿using Microsoft.IdentityModel.Tokens;
+using System.Configuration;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using Microsoft.IdentityModel.Tokens;
-using todoapp.server.Services.Jwt;
+using todoapp.server.Constants;
+using todoapp.server.Exceptions;
+using todoapp.server.Models;
 
 namespace todoapp.server.Services.Jwt
 {
@@ -12,8 +15,45 @@ namespace todoapp.server.Services.Jwt
 
         public JwtService(IConfiguration configuration)
         {
-            _secretKey = configuration["JwtSettings:SecretKey"];
+            _secretKey = configuration[ConfigurationConstants.SecretKeyJwtSettings]??
+                throw new EmptyConfigurationValueException();
         }
+
+        public string GenerateToken(string username, long time)
+        {
+            var handler = new JwtSecurityTokenHandler();
+
+            var privateKey = Encoding.UTF8.GetBytes(_secretKey);
+
+            var credentials = new SigningCredentials(
+                new SymmetricSecurityKey(privateKey),
+                SecurityAlgorithms.HmacSha256);
+
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                SigningCredentials = credentials,
+                Expires = DateTime.UtcNow.AddHours(1),
+                Subject = GenerateClaims(username)
+            };
+
+            var token = handler.CreateEncodedJwt(tokenDescriptor);
+            return token;
+        }
+
+        private static ClaimsIdentity GenerateClaims(string username)
+        {
+            var ci = new ClaimsIdentity();
+
+            ci.AddClaim(new Claim("username", username));
+
+            return ci;
+        }
+        public string ValidateToken(string token)
+        {
+            var result = ValidateTokenWithUserId(token);
+            return result.username;
+        }
+
         public string GenerateToken(string username, int userId, long time)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
@@ -32,14 +72,6 @@ namespace todoapp.server.Services.Jwt
             return token;
         }
 
-        // Keep existing ValidateToken method for backward compatibility
-        public string? ValidateToken(string token)
-        {
-            var result = ValidateTokenWithUserId(token);
-            return result.username;
-        }
-
-        // Add new method that returns both username and userId
         public (string username, int? userId) ValidateTokenWithUserId(string token)
         {
             if (string.IsNullOrEmpty(token))
@@ -75,43 +107,7 @@ namespace todoapp.server.Services.Jwt
                 return (null, null);
             }
             return (null, null);
+
         }
-        //public string? ValidateToken(string token)
-        //{
-        //    if (string.IsNullOrEmpty(token))
-        //        return null;
-
-        //    var tokenHandler = new JwtSecurityTokenHandler();
-        //    var key = Encoding.UTF8.GetBytes(_secretKey);
-
-        //    try
-        //    {
-        //        var validationParameters = new TokenValidationParameters
-        //        {
-        //            ValidateIssuerSigningKey = true,
-        //            IssuerSigningKey = new SymmetricSecurityKey(key),
-        //            ValidateIssuer = false,
-        //            //ValidIssuer = "http://localhost:5085",
-        //            ValidateAudience = false,
-        //            //ValidAudience = "http://localhost:5085",
-        //            ValidateLifetime = true,
-        //            ClockSkew = TimeSpan.Zero // Ensure token expiry time is strict
-        //        };
-
-        //        var principal = tokenHandler.ValidateToken(token, validationParameters, out SecurityToken validatedToken);
-
-        //        if (validatedToken is JwtSecurityToken jwtToken &&
-        //            jwtToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
-        //        {
-        //            return principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
-        //        }
-        //    }
-        //    catch
-        //    {
-        //        // Token validation failed
-        //        return null;
-        //    }
-        //    return null;
-        //}
     }
 }

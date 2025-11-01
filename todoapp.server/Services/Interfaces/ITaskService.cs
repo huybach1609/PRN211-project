@@ -1,16 +1,16 @@
 ﻿using SQLitePCL;
 using todoapp.server.Controllers;
 using todoapp.server.Models;
-using todoapp.server.Services.iml;
+using todoapp.server.Services.Implementations;
 
-namespace todoapp.server.Services
+namespace todoapp.server.Services.Interfaces
 {
     public interface ITaskService
     {
         TaskResponseDTO GetTasksByList(int listId, int userId);
         TaskDto GetTaskById(int taskId);
-        todoapp.server.Models.Task UdpateTag(int taskId, todoapp.server.Models.Task taskRequest);
-        todoapp.server.Models.Task DeleteTag(int taskId);
+        Models.Task UdpateTag(int taskId, Models.Task taskRequest);
+        Models.Task DeleteTag(int taskId);
 
         TaskResponseDTO GetTimerTasks(string timeFilter, int userId);
 

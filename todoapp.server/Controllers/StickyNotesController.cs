@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using todoapp.server.Models;
-using todoapp.server.Services;
+using todoapp.server.Services.Interfaces;
 
 namespace todoapp.server.Controllers
 {

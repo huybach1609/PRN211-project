@@ -10,8 +10,9 @@ using SQLitePCL;
 using todoapp.server.Controllers;
 using todoapp.server.Dtos;
 using todoapp.server.Models;
+using todoapp.server.Services.Interfaces;
 
-namespace todoapp.server.Services.iml
+namespace todoapp.server.Services.Implementations
 {
     public class TaskDto
     {

@@ -1,6 +1,6 @@
 ﻿using todoapp.server.Models;
 
-namespace todoapp.server.Dtos.AccountDto
+namespace todoapp.server.Dtos.AccountDtos
 {
     public class AccountResponseDto
     {

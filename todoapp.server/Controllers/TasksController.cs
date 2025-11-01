@@ -6,8 +6,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualBasic;
 using todoapp.server.Models;
-using todoapp.server.Services;
-using todoapp.server.Services.iml;
+using todoapp.server.Services.Implementations;
+using todoapp.server.Services.Interfaces;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860

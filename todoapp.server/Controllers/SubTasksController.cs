@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Client;
-using todoapp.server.Services;
-using todoapp.server.Services.iml;
+using todoapp.server.Services.Implementations;
+using todoapp.server.Services.Interfaces;
 
 namespace todoapp.server.Controllers
 {

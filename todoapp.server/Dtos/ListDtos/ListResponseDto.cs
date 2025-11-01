@@ -1,4 +1,4 @@
-﻿namespace todoapp.server.Dtos.ListDto
+﻿namespace todoapp.server.Dtos.ListDtos
 {
     public class ListResponseDto
     {

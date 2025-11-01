@@ -1,7 +1,7 @@
 ﻿using System.Reflection.Metadata.Ecma335;
 using Microsoft.CodeAnalysis.Scripting.Hosting;
 
-namespace todoapp.server.Dtos.ListDto
+namespace todoapp.server.Dtos.ListDtos
 {
     public class ListRequestDto
     {

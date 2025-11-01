@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using todoapp.server.Dtos.AccountDto;
+using todoapp.server.Dtos.AccountDtos;
 using todoapp.server.Models;
 
 namespace todoapp.server
@@ -9,7 +9,6 @@ namespace todoapp.server
         public MapperConfig()
         {
             CreateMap<Account, AccountResponseDto>();
-            
         }
 
     }

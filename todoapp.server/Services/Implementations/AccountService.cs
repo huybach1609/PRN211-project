@@ -1,8 +1,9 @@
 ﻿using AutoMapper;
-using todoapp.server.Dtos.AccountDto;
+using todoapp.server.Dtos.AccountDtos;
 using todoapp.server.Models;
+using todoapp.server.Services.Interfaces;
 
-namespace todoapp.server.Services
+namespace todoapp.server.Services.Implementations
 {
     public class AccountService : IAccountService
     {

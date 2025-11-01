@@ -1,6 +1,6 @@
-﻿using todoapp.server.Dtos.AccountDto;
+﻿using todoapp.server.Dtos.AccountDtos;
 
-namespace todoapp.server.Services
+namespace todoapp.server.Services.Interfaces
 {
     public interface IAccountService
     {

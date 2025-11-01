@@ -6,9 +6,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using todoapp.server.Dtos.AccountDto;
+using todoapp.server.Dtos.AccountDtos;
 using todoapp.server.Models;
-using todoapp.server.Services;
+using todoapp.server.Services.Interfaces;
 
 namespace todoapp.Controllers
 {

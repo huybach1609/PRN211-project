@@ -1,7 +1,7 @@
 ﻿using System.Reflection.Metadata.Ecma335;
 using todoapp.server.Models;
 
-namespace todoapp.server.Dtos.UserDto
+namespace todoapp.server.Dtos.UserDtos
 {
     public class UserLoginResponse
     {
