@@ -9,6 +9,7 @@ using todoapp.server.Models;
 
 namespace todoapp.server.Services.Jwt
 {
+
     public class JwtService : IJwtService
     {
         private readonly string _secretKey;
@@ -62,7 +63,7 @@ namespace todoapp.server.Services.Jwt
             return result.username;
         }
 
-        private async Task<string> GenerateAccessToken(List<Claim> claims, DateTime expiresAt)
+         public async Task<string> GenerateAccessToken(List<Claim> claims, DateTime expiresAt)
         {
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_secretKey));
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -133,6 +134,11 @@ namespace todoapp.server.Services.Jwt
             }
             return (null, null);
 
+        }
+
+        Task<string> IJwtService.GenerateAccessToken(List<Claim> claims, DateTime expiresAt)
+        {
+            return GenerateAccessToken(claims, expiresAt);
         }
     }
 }
