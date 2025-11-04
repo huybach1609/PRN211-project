@@ -13,7 +13,7 @@ namespace todoapp.server.Services.Implementations
 
         public List<StickyNote> GetStickyNotesByUserId(int userid)
         {
-            var list = _context.StickyNotes.Where(c => c.AccountId == userid).ToList();
+            var list = _context.StickyNotes.Where(c => c.UserId == userid).ToList();
             return list;
         }
         public StickyNote? DeleteStickyNote(int userId, int stId)
@@ -22,7 +22,7 @@ namespace todoapp.server.Services.Implementations
             var st = _context.StickyNotes.FirstOrDefault(c => c.Id == stId);
             if (st != null)
             {
-                if (st.AccountId == userId)
+                if (st.UserId == userId)
                 {
                     _context.StickyNotes.Remove(st);
                     _context.SaveChanges();

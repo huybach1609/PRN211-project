@@ -11,17 +11,17 @@ namespace todoapp.server.Utils
         };
 
         // add or replace user info in session
-        public static void SetUserInfo(HttpContext httpContext, Account user)
+        public static void SetUserInfo(HttpContext httpContext, User user)
         {
             var userJson = JsonConvert.SerializeObject(user, _settings);
             httpContext.Session.SetString("sesUser", userJson);
         }
 
         // get user info from session
-        public static Account GetUserInfo(HttpContext httpContext)
+        public static User GetUserInfo(HttpContext httpContext)
         {
             var userJson = httpContext.Session.GetString("sesUser");
-            return string.IsNullOrEmpty(userJson) ? null : JsonConvert.DeserializeObject<Account>(userJson);
+            return string.IsNullOrEmpty(userJson) ? null : JsonConvert.DeserializeObject<User>(userJson);
         }
 
         // remove user info from session

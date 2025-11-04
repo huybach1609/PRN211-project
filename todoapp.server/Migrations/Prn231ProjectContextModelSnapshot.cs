@@ -22,36 +22,6 @@ namespace todoapp.server.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("todoapp.server.Models.Account", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Email")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FullName")
-                        .HasMaxLength(400)
-                        .HasColumnType("nvarchar(400)");
-
-                    b.Property<string>("Password")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("Roll")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UserName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id")
-                        .HasName("PK__Account__3214EC0703D6E2F6");
-
-                    b.ToTable("Account", (string)null);
-                });
-
             modelBuilder.Entity("todoapp.server.Models.List", b =>
                 {
                     b.Property<int>("Id")
@@ -60,17 +30,17 @@ namespace todoapp.server.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("AccountId")
-                        .HasColumnType("int")
-                        .HasColumnName("AccountID");
-
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int")
+                        .HasColumnName("UserID");
 
                     b.HasKey("Id")
                         .HasName("PK__List__3214EC0731A512E6");
 
-                    b.HasIndex("AccountId");
+                    b.HasIndex("UserId");
 
                     b.ToTable("List", (string)null);
                 });
@@ -83,19 +53,19 @@ namespace todoapp.server.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("AccountId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Details")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id")
                         .HasName("StickyNote_pk");
 
-                    b.HasIndex("AccountId");
+                    b.HasIndex("UserId");
 
                     b.ToTable("StickyNote", (string)null);
                 });
@@ -202,25 +172,55 @@ namespace todoapp.server.Migrations
                     b.ToTable("Task", (string)null);
                 });
 
+            modelBuilder.Entity("todoapp.server.Models.User", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FullName")
+                        .HasMaxLength(400)
+                        .HasColumnType("nvarchar(400)");
+
+                    b.Property<string>("Password")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("Role")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id")
+                        .HasName("PK__User__3214EC0703D6E2F6");
+
+                    b.ToTable("User", (string)null);
+                });
+
             modelBuilder.Entity("todoapp.server.Models.List", b =>
                 {
-                    b.HasOne("todoapp.server.Models.Account", "Account")
+                    b.HasOne("todoapp.server.Models.User", "User")
                         .WithMany("Lists")
-                        .HasForeignKey("AccountId")
-                        .HasConstraintName("FK__List__AccountID__45F365D3");
+                        .HasForeignKey("UserId")
+                        .HasConstraintName("FK__List__UserID__45F365D3");
 
-                    b.Navigation("Account");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("todoapp.server.Models.StickyNote", b =>
                 {
-                    b.HasOne("todoapp.server.Models.Account", "Account")
+                    b.HasOne("todoapp.server.Models.User", "User")
                         .WithMany("StickyNotes")
-                        .HasForeignKey("AccountId")
+                        .HasForeignKey("UserId")
                         .IsRequired()
                         .HasConstraintName("FK__StickyNot__Accou__46E78A0C");
 
-                    b.Navigation("Account");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("todoapp.server.Models.SubTask", b =>
@@ -265,13 +265,6 @@ namespace todoapp.server.Migrations
                     b.Navigation("List");
                 });
 
-            modelBuilder.Entity("todoapp.server.Models.Account", b =>
-                {
-                    b.Navigation("Lists");
-
-                    b.Navigation("StickyNotes");
-                });
-
             modelBuilder.Entity("todoapp.server.Models.List", b =>
                 {
                     b.Navigation("Tasks");
@@ -287,6 +280,13 @@ namespace todoapp.server.Migrations
                     b.Navigation("SubTasks");
 
                     b.Navigation("TagsTasks");
+                });
+
+            modelBuilder.Entity("todoapp.server.Models.User", b =>
+                {
+                    b.Navigation("Lists");
+
+                    b.Navigation("StickyNotes");
                 });
 #pragma warning restore 612, 618
         }

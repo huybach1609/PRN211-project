@@ -1,13 +1,17 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
+using System.ComponentModel.DataAnnotations;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 using todoapp.server.Dtos.UserDtos;
 using todoapp.server.Enums;
+using todoapp.server.Models;
+using todoapp.server.Services.Interfaces;
 using todoapp.server.Services.Jwt;
 using todoapp.server.Services.Mail;
 using todoapp.server.Utils;
-using todoapp.server.Models;
-using Newtonsoft.Json;
-using todoapp.server.Services.Interfaces;
 
 namespace todoapp.server.Services.Implementations
 {
@@ -42,7 +46,7 @@ namespace todoapp.server.Services.Implementations
             var passRequest = StringUtils.ComputeSha256Hash(request.Password);
 
             // AsNoTracking to avoid mutating tracked entity later
-            var user = await _context.Accounts
+            var user = await _context.Users
                 .AsNoTracking()
                 .FirstOrDefaultAsync(
                     x => x.UserName == request.Username
@@ -63,17 +67,23 @@ namespace todoapp.server.Services.Implementations
             var httpContext = _httpContextAccessor.HttpContext!;
             UserSessionManager.SetUserInfo(httpContext, user);
 
-            var token = _jwtService.GenerateToken(user.UserName, user.Id, AccessTokenMinutes);
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.Email, user.Email ?? ""),
+                new Claim(ClaimTypes.Name, user.UserName ?? ""),
+                new Claim(ClaimTypes.Role, user.Role.ToString() ?? ""),
+            };
+            
+            var token = _jwtService.GenerateAccessToken(claims, DateTime.UtcNow.AddHours(1)).Result;
 
-            // Project a safe copy without password
-            var safeAccount = new Account
+            var safeUser = new User
             {
                 Id = user.Id,
                 UserName = user.UserName,
                 Email = user.Email,
                 Password = string.Empty,
-                Roll = user.Roll
-                // map other safe fields if needed
+                Role = user.Role
             };
 
             return new UserLoginResponse
@@ -81,7 +91,7 @@ namespace todoapp.server.Services.Implementations
                 Success = true,
                 Message = "Login successful!",
                 Key = token,
-                Account = safeAccount
+                User = safeUser
             };
         }
 
@@ -99,28 +109,28 @@ namespace todoapp.server.Services.Implementations
             }
 
             // One roundtrip to check conflicts
-            var exists = await _context.Accounts
+            var exists = await _context.Users
                 .AnyAsync(x => x.UserName == request.Username
                             || x.Email.ToLower() == request.Email.ToLower(), ct);
 
             if (exists)
             {
                 // Resolve which field collides for clearer message (two small extra queries; still fine)
-                var usernameTaken = await _context.Accounts.AnyAsync(x => x.UserName == request.Username, ct);
+                var usernameTaken = await _context.Users.AnyAsync(x => x.UserName == request.Username, ct);
                 var message = usernameTaken ? "Username already exists!" : "Email already exists!";
 
                 return new UserSignUpResponse { Success = false, Message = message };
             }
 
-            var newUser = new Account
+            var newUser = new User
             {
                 UserName = request.Username,
                 Email = request.Email,
                 Password = StringUtils.ComputeSha256Hash(request.Password),
-                Roll = (int)Roles.User
+                Role = (int)Roles.User
             };
 
-            await _context.Accounts.AddAsync(newUser, ct);
+            await _context.Users.AddAsync(newUser, ct);
             await _context.SaveChangesAsync(ct);
 
             return new UserSignUpResponse
@@ -135,7 +145,7 @@ namespace todoapp.server.Services.Implementations
             var username = _jwtService.ValidateToken(token);
             if (string.IsNullOrEmpty(username)) return false;
 
-            var user = await _context.Accounts
+            var user = await _context.Users
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.UserName == username, ct);
 
@@ -148,7 +158,7 @@ namespace todoapp.server.Services.Implementations
 
         public async Task<UserLoginResponse> ForgotPasswordAsync(string key, CancellationToken ct)
         {
-            var existingUser = await _context.Accounts
+            var existingUser = await _context.Users
                 .AsNoTracking()
                 .Where(x => x.UserName == key || x.Email.ToLower() == key.ToLower())
                 .Select(x => new { x.UserName, x.Id, x.Email })
@@ -186,15 +196,13 @@ namespace todoapp.server.Services.Implementations
             if (string.IsNullOrEmpty(username)) return false;
             if (!string.Equals(password, repassword, StringComparison.Ordinal)) return false;
 
-            var user = await _context.Accounts.FirstOrDefaultAsync(x => x.UserName == username, ct);
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.UserName == username, ct);
             if (user is null) return false;
 
             user.Password = StringUtils.ComputeSha256Hash(password);
             await _context.SaveChangesAsync(ct);
             return true;
         }
-
-        public string CheckToken(string token) => _jwtService.ValidateToken(token);
 
         private string GeneratePasswordResetUrl(string token)
         {
@@ -210,5 +218,5 @@ namespace todoapp.server.Services.Implementations
 
             return $"{baseUrl}{path}";
         }
-    }
+         }
 }

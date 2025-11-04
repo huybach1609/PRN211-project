@@ -8,6 +8,6 @@ namespace todoapp.server.Dtos.UserDtos
         public bool Success { get; set; }
         public string Message { get; set; }
         public string Key { get; set; }
-        public Account? Account { get; set; }
+        public User? User { get; set; }
     }
 }

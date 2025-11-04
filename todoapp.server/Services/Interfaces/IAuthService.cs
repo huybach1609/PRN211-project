@@ -9,6 +9,5 @@ namespace todoapp.server.Services.Interfaces
         Task<bool> ValidateTokenAsync(string token, CancellationToken ct);
         Task<UserLoginResponse> ForgotPasswordAsync(string key, CancellationToken ct);
         Task<bool> ResetPasswordAsync(string password, string repassword, string token, CancellationToken ct);
-        string CheckToken(string token);
     }
 }

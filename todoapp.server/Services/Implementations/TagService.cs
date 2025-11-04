@@ -16,7 +16,7 @@ namespace todoapp.server.Services.Implementations
         public List<Tag> GetTagByUserId(int userId)
         {
             var tags = _context.Tags.Where(tag => tag.TagsTasks
-                .Any(tt => tt.Task.List != null && tt.Task.List.AccountId == userId))
+                .Any(tt => tt.Task.List != null && tt.Task.List.UserId == userId))
                 .ToList();
             return tags;
         }

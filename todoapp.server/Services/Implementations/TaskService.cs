@@ -201,7 +201,7 @@ namespace todoapp.server.Services.Implementations
                 .Include(t => t.List)
                 .Include(t => t.TagsTasks)
                 .ThenInclude(tt => tt.Tags)
-                .Where(t => t.List.AccountId == userId && t.ListId == listId)
+                .Where(t => t.List.UserId == userId && t.ListId == listId)
                 .AsQueryable();
 
             // Convert to DTOs to avoid circular references
@@ -224,7 +224,7 @@ namespace todoapp.server.Services.Implementations
                 .Include(t => t.SubTasks)
                 .Include(t => t.TagsTasks)
                 .ThenInclude(tt => tt.Tags)
-                .Where(t => t.List.AccountId == userId)
+                .Where(t => t.List.UserId == userId)
                 .AsQueryable();
             // Get today's date as DateOnly for comparison
             DateOnly today = DateOnly.FromDateTime(DateTime.Today);

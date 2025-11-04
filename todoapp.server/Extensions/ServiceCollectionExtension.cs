@@ -5,9 +5,11 @@ using Microsoft.AspNetCore.OData;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OData.ModelBuilder;
+using Microsoft.OpenApi.Models;
 using System.Text;
 using todoapp.server.Constants;
 using todoapp.server.Dtos;
+using todoapp.server.Exceptions;
 using todoapp.server.Models;
 using todoapp.server.Services.Implementations;
 using todoapp.server.Services.Interfaces;
@@ -39,6 +41,8 @@ namespace todoapp.server.Extensions
 
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
+            //services.AddSwaggerGen();
+
 
             // Session
             services.AddSession(o =>
@@ -105,7 +109,7 @@ namespace todoapp.server.Extensions
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IListService, ListService>();
             services.AddScoped<ITaskService, TaskService>();
-            services.AddScoped<IAccountService, AccountService>();
+            services.AddScoped<IUserService, UserService>();
             services.AddScoped<IStickyNoteService, StickyNoteService>();
 
             services.AddSingleton<IJwtService, JwtService>();
@@ -120,10 +124,9 @@ namespace todoapp.server.Extensions
         {
             var secret = configuration[ConfigurationConstants.SecretKeyJwtSettings];
             if (string.IsNullOrWhiteSpace(secret))
-            {
                 throw new InvalidOperationException(
-                    $"Missing JWT secret at '{ConfigurationConstants.SecretKeyJwtSettings}'.");
-            }
+                    $"Missing or empty JWT secret at '{ConfigurationConstants.SecretKeyJwtSettings}'.");
+
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                     .AddJwtBearer(options =>

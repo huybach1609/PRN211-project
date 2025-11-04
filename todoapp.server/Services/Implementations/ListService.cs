@@ -21,7 +21,7 @@ namespace todoapp.server.Services.Implementations
             var list = _context.Lists.Add(new todoapp.server.Models.List()
             {
                 Name = request.Name,
-                AccountId = request.AccountId
+                UserId = request.UserId
             }).Entity;
             _context.SaveChanges();
             return new ListResponseDto
@@ -36,7 +36,7 @@ namespace todoapp.server.Services.Implementations
         {
             IEnumerable<List> list = _context.Lists
                 .Include(l => l.Tasks)
-                .Where(l => l.AccountId == userId)
+                .Where(l => l.UserId == userId)
                 .AsQueryable();
             return list;
         }
@@ -68,6 +68,10 @@ namespace todoapp.server.Services.Implementations
             {
                 var listinfo = _context.Lists.Include(l => l.Tasks)
                     .FirstOrDefault(l => l.Id == listId);
+                if (listinfo == null)
+                {
+                    return 0;
+                }
                 return listinfo.Tasks.Count();
             }
             else if (!string.IsNullOrEmpty(timestamp))
@@ -75,7 +79,7 @@ namespace todoapp.server.Services.Implementations
 
                 var tasklist = _context.Tasks
                     .Include(t => t.List)
-                    .Where(t => t.List.AccountId == userId)
+                    .Where(t => t.List.UserId == userId)
                     .AsQueryable();
                 // Get today's date as DateOnly for comparison
                 DateOnly today = DateOnly.FromDateTime(DateTime.Today);
@@ -99,6 +103,16 @@ namespace todoapp.server.Services.Implementations
                 return tasklist != null ? tasklist.ToList().Count() : 0;
             }
             return 0;
+        }
+
+        public ListDto MapTaskToResponse(List t)
+        {
+            return new ListDto
+            {
+                Id = t.Id,
+                Name = t.Name,
+                UserId = t.UserId
+            };
         }
 
         public ListResponseDto UpdateList(ListRequestDto request)

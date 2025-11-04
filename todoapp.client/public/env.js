@@ -1,3 +1,3 @@
 window.__ENV__ = {
-  VITE_API_URL: "/api",
+  VITE_API_URL: "http://localhost:5290/api",
 };

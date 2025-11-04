@@ -11,7 +11,7 @@ namespace todoapp.server.Controllers
     {
         public int? Id { get; set; }
         public string? Name { get; set; }
-        public string? Detail { get; set; }
+        public string? Details { get; set; }
 
     }
     
@@ -40,7 +40,7 @@ namespace todoapp.server.Controllers
             {
                 Id = request.Id.Value,
                 Name = request.Name,
-                Details = request.Detail
+                Details = request.Details
             });
 
             return Ok(new { status = true, message = "save successfully!" });
@@ -50,9 +50,9 @@ namespace todoapp.server.Controllers
         {
             var obj = _service.CreateStickyNote(new StickyNote()
             {
-                AccountId = userId,
+                UserId = userId,
                 Name = request.Name,
-                Details= request.Detail
+                Details= request.Details
             });
             
             return Ok(new { status = true, message = "create successfully!", obj = obj });

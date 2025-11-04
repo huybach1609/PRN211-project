@@ -19,14 +19,14 @@ namespace todoapp.server.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] UserLoginRequest request, CancellationToken ct)
+        public async Task<ActionResult<UserLoginResponse>> Login([FromBody] UserLoginRequest request, CancellationToken ct)
         {
             var response = await _authService.LoginAsync(request, ct);
             return response.Success ? Ok(response) : BadRequest(response);
         }
 
         [HttpPost("signup")]
-        public async Task<IActionResult> SignUp([FromBody] UserSignUpRequest request, CancellationToken ct)
+        public async Task<ActionResult<UserSignUpResponse>> SignUp([FromBody] UserSignUpRequest request, CancellationToken ct)
         {
             var response = await _authService.SignUpAsync(request, ct);
             return response.Success ? Ok(response) : BadRequest(response);

@@ -9,9 +9,9 @@ public partial class List
 
     public string? Name { get; set; }
 
-    public int? AccountId { get; set; }
+    public int? UserId { get; set; }
 
-    public virtual Account? Account { get; set; }
+    public virtual User? User { get; set; }
 
     public virtual ICollection<Task> Tasks { get; set; } = new List<Task>();
 }

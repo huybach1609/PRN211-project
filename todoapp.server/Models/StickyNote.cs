@@ -7,11 +7,11 @@ public partial class StickyNote
 {
     public int Id { get; set; }
 
-    public int AccountId { get; set; }
+    public int UserId { get; set; }
 
     public string? Name { get; set; }
 
     public string? Details { get; set; }
 
-    public virtual Account Account { get; set; } = null!;
+    public virtual User User { get; set; } = null!;
 }

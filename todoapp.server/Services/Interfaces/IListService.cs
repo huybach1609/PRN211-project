@@ -9,6 +9,7 @@ namespace todoapp.server.Services.Interfaces
         IEnumerable<List> GetByUserId(int userId);
         ListResponseDto GetListById(int listId);
         int GetNumberOfTaskInfo(string timestamp, int listId, int userId);
+        ListDto MapTaskToResponse(List t);
         ListResponseDto UpdateList(ListRequestDto request);
     }
 }

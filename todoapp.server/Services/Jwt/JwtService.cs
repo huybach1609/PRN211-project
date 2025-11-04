@@ -12,10 +12,18 @@ namespace todoapp.server.Services.Jwt
     public class JwtService : IJwtService
     {
         private readonly string _secretKey;
+        private readonly string _issuer;
+        private readonly string _audience;
 
         public JwtService(IConfiguration configuration)
         {
-            _secretKey = configuration[ConfigurationConstants.SecretKeyJwtSettings]??
+            _secretKey = configuration[ConfigurationConstants.SecretKeyJwtSettings] ??
+                throw new EmptyConfigurationValueException();
+
+            _issuer = configuration[ConfigurationConstants.SecretKeyIssuer] ??
+                throw new EmptyConfigurationValueException();
+
+            _audience = configuration[ConfigurationConstants.SecretKeyAudience] ??
                 throw new EmptyConfigurationValueException();
         }
 
@@ -53,6 +61,23 @@ namespace todoapp.server.Services.Jwt
             var result = ValidateTokenWithUserId(token);
             return result.username;
         }
+
+        private async Task<string> GenerateAccessToken(List<Claim> claims, DateTime expiresAt)
+        {
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_secretKey));
+            var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var token = new JwtSecurityToken(
+                issuer: _issuer,
+                audience: _audience,
+                claims: claims,
+                expires: expiresAt,
+                signingCredentials: credentials
+            );
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
 
         public string GenerateToken(string username, int userId, long time)
         {

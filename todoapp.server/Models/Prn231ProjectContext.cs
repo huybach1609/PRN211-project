@@ -15,7 +15,7 @@ public partial class Prn231ProjectContext : DbContext
     {
     }
 
-    public virtual DbSet<Account> Accounts { get; set; }
+    public virtual DbSet<User> Users { get; set; }
 
     public virtual DbSet<List> Lists { get; set; }
 
@@ -31,11 +31,11 @@ public partial class Prn231ProjectContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Account>(entity =>
+        modelBuilder.Entity<User>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Account__3214EC0703D6E2F6");
+            entity.HasKey(e => e.Id).HasName("PK__User__3214EC0703D6E2F6");
 
-            entity.ToTable("Account");
+            entity.ToTable("User");
 
             entity.Property(e => e.FullName).HasMaxLength(400);
         });
@@ -46,11 +46,11 @@ public partial class Prn231ProjectContext : DbContext
 
             entity.ToTable("List");
 
-            entity.Property(e => e.AccountId).HasColumnName("AccountID");
+            entity.Property(e => e.UserId).HasColumnName("UserID");
 
-            entity.HasOne(d => d.Account).WithMany(p => p.Lists)
-                .HasForeignKey(d => d.AccountId)
-                .HasConstraintName("FK__List__AccountID__45F365D3");
+            entity.HasOne(d => d.User).WithMany(p => p.Lists)
+                .HasForeignKey(d => d.UserId)
+                .HasConstraintName("FK__List__UserID__45F365D3");
         });
 
         modelBuilder.Entity<StickyNote>(entity =>
@@ -59,8 +59,8 @@ public partial class Prn231ProjectContext : DbContext
 
             entity.ToTable("StickyNote");
 
-            entity.HasOne(d => d.Account).WithMany(p => p.StickyNotes)
-                .HasForeignKey(d => d.AccountId)
+            entity.HasOne(d => d.User).WithMany(p => p.StickyNotes)
+                .HasForeignKey(d => d.UserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__StickyNot__Accou__46E78A0C");
         });
