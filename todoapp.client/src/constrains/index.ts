@@ -1,4 +1,4 @@
-export const API_URL = "http://localhost:5290/api";
+export const API_URL = "https://localhost:7203/api";
 
 export const JWT_STORAGE_KEY = "jwt";
 
