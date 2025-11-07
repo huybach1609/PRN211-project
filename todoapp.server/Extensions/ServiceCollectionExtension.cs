@@ -1,15 +1,12 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.HttpOverrides;
-using Microsoft.AspNetCore.OData;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OData.ModelBuilder;
-using Microsoft.OpenApi.Models;
+using System.Reflection;
 using System.Text;
 using todoapp.server.Constants;
 using todoapp.server.Dtos;
-using todoapp.server.Exceptions;
 using todoapp.server.Models;
 using todoapp.server.Services.Implementations;
 using todoapp.server.Services.Interfaces;
@@ -26,22 +23,46 @@ namespace todoapp.server.Extensions
             services.AddDistributedMemoryCache();
 
             // Build OData model once here (avoid re-adding controllers later)
-            var odataModel = BuildODataModel();
+            //var odataModel = BuildODataModel();
+            services.AddControllers();
 
-            services
-                .AddControllers()
-                .AddOData(opt => opt
-                    .Select()
-                    .Filter()
-                    .Count()
-                    .OrderBy()
-                    .Expand()
-                    .SetMaxTop(ODataEntitySets.MaxTop)
-                    .AddRouteComponents(ODataEntitySets.RoutePrefix, odataModel));
+            //services
+            //    .AddControllers()
+            //    .AddOData(opt => opt
+            //        .Select()
+            //        .Filter()
+            //        .Count()
+            //        .OrderBy()
+            //        .Expand()
+            //        .SetMaxTop(ODataEntitySets.MaxTop)
+            //        .AddRouteComponents(ODataEntitySets.RoutePrefix, odataModel));
 
             services.AddEndpointsApiExplorer();
-            services.AddSwaggerGen();
-            //services.AddSwaggerGen();
+            services.AddSwaggerGen(c =>
+            {
+                var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
+            });
+
+
+            services.Configure<ApiBehaviorOptions>(options =>
+            {
+                options.InvalidModelStateResponseFactory = context =>
+                {
+                    var errors = context.ModelState
+                    .Where(e => e.Value.Errors.Count > 0)
+                    .Select(e => new
+                    {
+                        Field = e.Key,
+                        Messages = e.Value.Errors.Select(er => er.ErrorMessage)
+                    });
+                    return new BadRequestObjectResult(new
+                    {
+                        Message = "Validation errors occurred.",
+                        Errors = errors
+                    });
+                };
+            });
 
 
             // Session
@@ -51,6 +72,7 @@ namespace todoapp.server.Extensions
                 o.Cookie.HttpOnly = true;
                 o.Cookie.IsEssential = true;
             });
+
 
             return services;
         }
@@ -74,7 +96,7 @@ namespace todoapp.server.Extensions
                     b.AllowAnyOrigin()
                      .AllowAnyHeader()
                      .AllowAnyMethod();
-                     //.AllowCredentials();
+                    //.AllowCredentials();
                 });
             });
 
@@ -158,17 +180,24 @@ namespace todoapp.server.Extensions
                         }
                     });
 
-            services.AddAuthorization();
+            services.AddAuthorizationBuilder()
+                    .AddPolicy("AdminOnly", policy =>
+                        policy.RequireRole(UserRole.Admin.ToString()))
+                    .AddPolicy("UserOnly", policy =>
+                        policy.RequireRole(UserRole.User.ToString()))
+                    .AddPolicy("UserOrAdmin", policy =>
+                        policy.RequireRole(UserRole.User.ToString(), UserRole.Admin.ToString()));
+
             return services;
         }
 
-        // Build EDM once
-        private static Microsoft.OData.Edm.IEdmModel BuildODataModel()
-        {
-            var modelBuilder = new ODataConventionModelBuilder();
-            modelBuilder.EntitySet<List>("Lists");
-            modelBuilder.EntitySet<todoapp.server.Models.Task>("Tasks");
-            return modelBuilder.GetEdmModel();
-        }
+        //// Build EDM once
+        //private static Microsoft.OData.Edm.IEdmModel BuildODataModel()
+        //{
+        //    var modelBuilder = new ODataConventionModelBuilder();
+        //    modelBuilder.EntitySet<List>("Lists");
+        //    modelBuilder.EntitySet<todoapp.server.Models.Task>("Tasks");
+        //    return modelBuilder.GetEdmModel();
+        //}
     }
 }

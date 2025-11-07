@@ -21,5 +21,16 @@ namespace todoapp.server.Services.Interfaces
         SubTaskResponse CreateSubTask(SubTaskRequest request);
         SubTaskResponse UpdateSubTask(int subtaskId, SubTaskRequest request);
         SubTaskResponse DeleteSubTask(int subtaskId);
+
+        /// <summary>
+        /// Get task counts all or by listId
+        /// if listid != 0 search by listid
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="listId"></param>
+        /// <param name="ct"></param>
+        /// <returns></returns>
+        public Task<TaskCountsDto> GetTaskCountsByTimestampAsync(int userId, int? listId, CancellationToken ct);
+
     }
 }

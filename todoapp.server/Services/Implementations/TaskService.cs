@@ -61,6 +61,38 @@ namespace todoapp.server.Services.Implementations
             _mapper = mapper;
         }
 
+        public async Task<TaskCountsDto> GetTaskCountsByTimestampAsync(int userId,
+         int? listId,
+         CancellationToken ct)
+        {
+            var query = _context.Tasks
+                .AsNoTracking()
+                .Where(t => t.List != null && t.List.UserId == userId);
+
+            if (listId.HasValue)
+            {
+                query = query.Where(t => t.ListId == listId.Value);
+            }
+
+            var today = DateOnly.FromDateTime(DateTime.UtcNow);
+
+            // Execute all counts in database (don't load all tasks into memory)
+            var total = await query.CountAsync(ct);
+            var todayCount = await query.CountAsync(t => t.DueDate.HasValue && t.DueDate.Value == today, ct);
+            var upcomingCount = await query.CountAsync(t => t.DueDate.HasValue && t.DueDate.Value > today, ct);
+            var overdueCount = await query.CountAsync(t => t.DueDate.HasValue && t.DueDate.Value < today, ct);
+            var completedCount = await query.CountAsync(t => t.Status.HasValue && t.Status.Value, ct);
+
+            return new TaskCountsDto
+            {
+                Total = total,
+                Today = todayCount,
+                Upcoming = upcomingCount,
+                Overdue = overdueCount,
+                Completed = completedCount,
+            };
+        }
+
         public TaskAddResponseDTO CreateTask(TaskAddRequest request)
         {
             Models.Task task = new Models.Task();
@@ -299,7 +331,7 @@ namespace todoapp.server.Services.Implementations
 
                 _context.TagsTasks.AddRange(newTagTasks);
             }
-           
+
             _context.SaveChanges();
             return new TaskAddResponseDTO()
             {

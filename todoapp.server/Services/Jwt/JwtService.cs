@@ -63,14 +63,12 @@ namespace todoapp.server.Services.Jwt
             return result.username;
         }
 
-         public async Task<string> GenerateAccessToken(List<Claim> claims, DateTime expiresAt)
+         public async Task<string> GenerateAccessToken(List<Claim> claims, DateTime expiresAt, CancellationToken ct)
         {
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_secretKey));
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken(
-                issuer: _issuer,
-                audience: _audience,
                 claims: claims,
                 expires: expiresAt,
                 signingCredentials: credentials
@@ -134,11 +132,6 @@ namespace todoapp.server.Services.Jwt
             }
             return (null, null);
 
-        }
-
-        Task<string> IJwtService.GenerateAccessToken(List<Claim> claims, DateTime expiresAt)
-        {
-            return GenerateAccessToken(claims, expiresAt);
         }
     }
 }

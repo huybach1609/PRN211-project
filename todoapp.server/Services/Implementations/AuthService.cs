@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
@@ -55,12 +56,12 @@ namespace todoapp.server.Services.Implementations
 
             if (user is null)
             {
-                return new UserLoginResponse { Success = false, Message = "Invalid username!" };
+                return new UserLoginResponse { Result = false, Message = "Invalid username!" };
             }
 
             if (!string.Equals(passRequest, user.Password, StringComparison.Ordinal))
             {
-                return new UserLoginResponse { Success = false, Message = "Wrong password!" };
+                return new UserLoginResponse { Result = false, Message = "Wrong password!" };
             }
 
             // Set session
@@ -69,13 +70,13 @@ namespace todoapp.server.Services.Implementations
 
             var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Email, user.Email ?? ""),
-                new Claim(ClaimTypes.Name, user.UserName ?? ""),
-                new Claim(ClaimTypes.Role, user.Role.ToString() ?? ""),
+                new (ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new (ClaimTypes.Email, user.Email ?? ""),
+                new (ClaimTypes.Name, user.UserName ?? ""),
+                new (ClaimTypes.Role, user.Role.ToString() ?? ""),
             };
             
-            var token = _jwtService.GenerateAccessToken(claims, DateTime.UtcNow.AddHours(1)).Result;
+            var token = await _jwtService.GenerateAccessToken(claims, DateTime.UtcNow.AddHours(1), ct);
 
             var safeUser = new User
             {
@@ -86,12 +87,12 @@ namespace todoapp.server.Services.Implementations
                 Role = user.Role
             };
 
+
             return new UserLoginResponse
             {
-                Success = true,
+                Result = true,
                 Message = "Login successful!",
-                Key = token,
-                User = safeUser
+                AccessToken = token,
             };
         }
 
@@ -166,7 +167,7 @@ namespace todoapp.server.Services.Implementations
 
             if (existingUser is null)
             {
-                return new UserLoginResponse { Success = false, Message = "Not found any email or username" };
+                return new UserLoginResponse { Result= false, Message = "Not found any email or username" };
             }
 
             var token = _jwtService.GenerateToken(existingUser.UserName, existingUser.Id, ResetTokenMinutes);
@@ -187,7 +188,7 @@ namespace todoapp.server.Services.Implementations
             var header = "Reset your password | TodoApp";
             _mailService.SendMail(content, existingUser.Email, header);
 
-            return new UserLoginResponse { Success = true, Message = message };
+            return new UserLoginResponse { Result= true, Message = message };
         }
 
         public async Task<bool> ResetPasswordAsync(string password, string repassword, string token, CancellationToken ct)

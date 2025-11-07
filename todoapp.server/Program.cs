@@ -1,6 +1,4 @@
 using todoapp.server.Extensions;
-using Microsoft.AspNetCore.OpenApi;
-using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,7 +12,6 @@ builder.Services
     .AddApplicationServices(builder.Configuration, builder.Environment);
 
 // services
-
 var app = builder.Build();
 
 

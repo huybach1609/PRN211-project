@@ -1,13 +1,28 @@
 ﻿using System.Reflection;
-using Azure.Core;
 using Microsoft.EntityFrameworkCore;
-using NuGet.Protocol;
 using todoapp.server.Dtos.ListDtos;
 using todoapp.server.Models;
 using todoapp.server.Services.Interfaces;
 
 namespace todoapp.server.Services.Implementations
 {
+    /// <summary>
+    /// Task count summary for a given list.
+    /// </summary>
+    public class TaskCountsDto
+    {
+        /// <summary>Total number of tasks in the query.</summary>
+        public int Total { get; set; } = 0;
+        /// <summary>Number of tasks due today.</summary>
+        public int Today { get; set; } = 0;
+        /// <summary>Number of upcoming tasks.</summary>
+        public int Upcoming { get; set; } = 0;
+        /// <summary>Number of overdue tasks.</summary>
+        public int Overdue { get; set; } = 0;
+        /// <summary>Number of completed tasks.</summary>
+        public int Completed { get; set; } = 0;
+
+    }
     public class ListService : IListService
     {
         private readonly Prn231ProjectContext _context;
@@ -15,130 +30,54 @@ namespace todoapp.server.Services.Implementations
         {
             _context = context;
         }
-
-        public ListResponseDto CreateList(ListRequestDto request)
+        public async Task<System.Collections.Generic.List<ListResponseDto>> GetListsByUserIdAsync(int userId, bool includeCount, CancellationToken ct)
         {
-            var list = _context.Lists.Add(new todoapp.server.Models.List()
-            {
-                Name = request.Name,
-                UserId = request.UserId
-            }).Entity;
-            _context.SaveChanges();
-            return new ListResponseDto
-            {
-                Message = $"Create list {request.Name} successfully",
-                Status = true,
-                Result = list
-            };
-        }
-
-        public IEnumerable<List> GetByUserId(int userId)
-        {
-            IEnumerable<List> list = _context.Lists
-                .Include(l => l.Tasks)
+            var listquery = _context.Lists
+                .AsNoTracking()
                 .Where(l => l.UserId == userId)
-                .AsQueryable();
-            return list;
+                .OrderBy(l => l.Id);
+
+            return await listquery.Select(l => new ListResponseDto
+            {
+                Result = l,
+                NumberOfTaskInfo = includeCount ? _context.Tasks.Count(t => t.ListId == l.Id) : null
+            }).ToListAsync(ct);
         }
 
-        public ListResponseDto GetListById(int listId)
+        public Task<List?> GetListByIdAsync(int listId, CancellationToken ct)
         {
-            var listd = _context.Lists.FirstOrDefault(x => x.Id == listId);
-            if (listd == null)
+            return _context.Lists.AsNoTracking().FirstOrDefaultAsync(l => l.Id == listId, ct);
+        }
+
+        public async Task<List> CreateListAsync(int userId, string? name, CancellationToken ct)
+        {
+            var entity = new List
             {
-                return new ListResponseDto
-                {
-                    Message = $"No found list ",
-                    Status = false,
-                    Result = new List()
-                };
-            }
-            return new ListResponseDto
-            {
-                Message = $"found list ",
-                Status = true,
-                Result = listd
+                UserId = userId,
+                Name = name
             };
+            _context.Lists.Add(entity);
+            await _context.SaveChangesAsync(ct);
+            return entity;
         }
 
-        // if listid != 0 search by listid
-        public int GetNumberOfTaskInfo(string timestamp, int listId, int userId)
+        public async Task<List?> UpdateListAsync(int userId, int listId, string? name, CancellationToken ct)
         {
-            if (listId != 0)
-            {
-                var listinfo = _context.Lists.Include(l => l.Tasks)
-                    .FirstOrDefault(l => l.Id == listId);
-                if (listinfo == null)
-                {
-                    return 0;
-                }
-                return listinfo.Tasks.Count();
-            }
-            else if (!string.IsNullOrEmpty(timestamp))
-            {
+            var entity = await _context.Lists.FirstOrDefaultAsync(l => l.Id == listId && l.UserId == userId, ct);
+            if (entity == null) return null;
 
-                var tasklist = _context.Tasks
-                    .Include(t => t.List)
-                    .Where(t => t.List.UserId == userId)
-                    .AsQueryable();
-                // Get today's date as DateOnly for comparison
-                DateOnly today = DateOnly.FromDateTime(DateTime.Today);
-
-                switch (timestamp.ToLower())
-                {
-                    case "future":
-                    case "upcoming":
-                        tasklist = tasklist.Where(t => t.DueDate.HasValue && t.DueDate > today);
-                        break;
-                    case "today":
-                        tasklist = tasklist.Where(t => t.DueDate.HasValue && t.DueDate == today);
-                        break;
-                    case "past":
-                    case "lated":
-                        tasklist = tasklist.Where(t => t.DueDate.HasValue && t.DueDate < today);
-                        break;
-                    default:
-                        return 0;
-                }
-                return tasklist != null ? tasklist.ToList().Count() : 0;
-            }
-            return 0;
+            if (name != null) entity.Name = name;
+            await _context.SaveChangesAsync(ct);
+            return entity;
         }
 
-        public ListDto MapTaskToResponse(List t)
+        public async Task<List?> DeleteListAsync(int userId, int listId, CancellationToken ct)
         {
-            return new ListDto
-            {
-                Id = t.Id,
-                Name = t.Name,
-                UserId = t.UserId
-            };
-        }
-
-        public ListResponseDto UpdateList(ListRequestDto request)
-        {
-
-            var listdb = _context.Lists.FirstOrDefault(l => l.Id == request.Id);
-
-            if (listdb == null)
-            {
-                return new ListResponseDto
-                {
-                    Message = $"No found list {request.Name}",
-                    Status = false,
-                };
-            }
-
-            listdb.Name = request.Name;
-
-            _context.SaveChanges();
-
-            return new ListResponseDto
-            {
-                Message = $"Update list {request.Name} successfully",
-                Status = true,
-                Result = listdb
-            };
+            var entity = await _context.Lists.FirstOrDefaultAsync(l => l.Id == listId && l.UserId == userId, ct);
+            if (entity == null) return null;
+            _context.Lists.Remove(entity);
+            await _context.SaveChangesAsync(ct);
+            return entity;
         }
     }
 }

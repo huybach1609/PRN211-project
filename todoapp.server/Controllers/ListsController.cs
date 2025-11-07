@@ -1,17 +1,16 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.OData.Query;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using todoapp.server.Dtos.ListDtos;
 using todoapp.server.Models;
-using todoapp.server.Services.Implementations;
 using todoapp.server.Services.Interfaces;
 
 namespace todoapp.server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class ListsController : ControllerBase
     {
         private readonly IListService _listService;
@@ -23,110 +22,123 @@ namespace todoapp.server.Controllers
 
         }
 
-        //============================= OLD ===========================
-        // timestamp null // listId = 0
-        [Authorize]
-        [HttpGet("/api/count-info/{timestamp}/{listId}")]
-        public IActionResult GetNumberOfTaskInfo(string timestamp, int listId)
+        private int GetCurrentUserId()
         {
-            // Extract userId from the claims
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
             if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
             {
-                return Unauthorized("Invalid user credentials");
+                throw new UnauthorizedAccessException("Invalid user identifier");
             }
-
-            return Ok((int)_listService.GetNumberOfTaskInfo(timestamp, listId, userId));
+            return userId;
         }
 
-        [HttpGet("/api/odata/user/{userId}")]
-        [EnableQuery]
-        public IActionResult GetListByUserId(int userId)
+        #region REST-style endpoints 
+        // GET: api/lists
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> GetLists(
+            [FromQuery] bool includeCounts = false
+            , CancellationToken ct = default)
         {
-            return Ok(_listService.GetByUserId(userId));
-        }
-
-        [HttpGet("/api/odata/{listId}")]
-        public IActionResult GetListById(int listId)
-        {
-            return Ok((ListResponseDto)_listService.GetListById(listId));
-        }
-        [EnableQuery]
-        [HttpGet("/api/odata")]
-        public IActionResult GetAll()
-        {
-            return Ok(_context.Lists);
-        }
-
-        [HttpPost("/api/odata")]
-        public IActionResult CreateList([FromBody] ListRequestDto request)
-        {
-            return Ok((ListResponseDto)_listService.CreateList(request));
-        }
-
-        [HttpPut("/api/odata")]
-        public IActionResult UdpateList([FromBody] ListRequestDto request)
-        {
-            return Ok((ListResponseDto)_listService.UpdateList(request));
-        }
-        //============================= New ===========================
-        public record PageResult<T>(IReadOnlyList<T> Items, string? NextCursor);
-        public record ListPatchDto(string? Name, string? Description);
-
-        // ===== Helpers =====
-        private bool TryGetUserId(out int userId)
-        {
-            userId = 0;
-            var val = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            return !string.IsNullOrEmpty(val) && int.TryParse(val, out userId);
-        }
-        private static bool TryDecodeCursor(string? cursor, out int lastId)
-        {
-            lastId = 0;
-            if (string.IsNullOrWhiteSpace(cursor)) return false;
             try
             {
-                var decoded = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(cursor));
-                return int.TryParse(decoded, out lastId);
+                var userId = GetCurrentUserId();
+                var lists = await _listService.GetListsByUserIdAsync(userId, includeCounts, ct);
+
+
+                return Ok(lists);
             }
-            catch { return false; }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized();
+            }
         }
-        private static string EncodeCursor(int id) =>
-           Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(id.ToString()));
 
-        [Authorize]
-        [HttpGet]
-        [ProducesResponseType(typeof(PageResult<ListDto>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetList(
-            [FromQuery] int limit = 50,
-            [FromQuery] string? cursor = null,
-            CancellationToken ct = default)
+        // GET: api/lists/{id}
+        [HttpGet("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public async Task<IActionResult> GetListById(int id, CancellationToken ct)
         {
-            if (!TryGetUserId(out var userId))
-                return Unauthorized(new ProblemDetails { Title = "Invalid user credentials" });
-
-            //prevents giant queries.
-            limit = Math.Clamp(limit, 1, 200);
-
-            IQueryable<Models.List> q = _context.Lists
-              .AsNoTracking()
-              .Where(l => l.UserId == userId)
-              .OrderBy(l => l.Id);
-
-            //If the client sends cursor, decode it to lastId and continue after that id
-            if (TryDecodeCursor(cursor, out var lastId))
-                q = q.Where(l => l.Id > lastId);
-
-
-            var items = await q.Take(limit + 1).ToListAsync(ct);
-            var hasMore = items.Count > limit;
-            if (hasMore) items.RemoveAt(items.Count - 1);
-
-            var dtoItems = items.Select(t => (ListDto)_listService.MapTaskToResponse(t)).ToList();
-            var nextCursor = hasMore ? EncodeCursor(items.Last().Id) : null;
-            return Ok(new PageResult<ListDto>(dtoItems, nextCursor));
+            try
+            {
+                var userId = GetCurrentUserId();
+                var list = await _listService.GetListByIdAsync(id, ct);
+                if (list == null) return NotFound(new { message = "List not found" });
+                if (list.UserId != userId) return Forbid();
+                return Ok(list);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized();
+            }
         }
+
+        // POST: api/lists
+        [HttpPost]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> CreateList([FromBody] ListRequestDto request, CancellationToken ct)
+        {
+            try
+            {
+                var userId = GetCurrentUserId();
+                var created = await _listService.CreateListAsync(userId, request.Name, ct);
+                return CreatedAtAction(
+                    nameof(GetListById),
+                    new { id = created.Id },
+                    created);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized();
+            }
+        }
+
+        // PUT: api/lists/{id}
+        [HttpPut("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public async Task<IActionResult> UpdateList(int id, [FromBody] ListRequestDto request, CancellationToken ct)
+        {
+            try
+            {
+                var userId = GetCurrentUserId();
+                var updated = await _listService.UpdateListAsync(userId, id, request.Name, ct);
+                if (updated == null) return NotFound(new { message = "List not found or access denied" });
+                return Ok(updated);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized();
+            }
+        }
+
+        // DELETE: api/lists/{id}
+        [HttpDelete("{id}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public async Task<IActionResult> DeleteList(int id, CancellationToken ct)
+        {
+            try
+            {
+                var userId = GetCurrentUserId();
+                var deleted = await _listService.DeleteListAsync(userId, id, ct);
+                if (deleted == null) return NotFound(new { message = "List not found or access denied" });
+                return NoContent();
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized();
+            }
+        }
+        #endregion
 
 
 

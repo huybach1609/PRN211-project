@@ -12,7 +12,7 @@ namespace todoapp.server.Services.Jwt
         /// <param name="claims">list of claims </param>
         /// <param name="expiresAt">type date time </param>
         /// <returns></returns>
-        Task<string> GenerateAccessToken(List<Claim> claims, DateTime expiresAt);
+        Task<string> GenerateAccessToken(List<Claim> claims, DateTime eẠkipiresAt, CancellationToken ct);
 
         public string GenerateToken(string username, int userId, long time);
         string ValidateToken(string token);

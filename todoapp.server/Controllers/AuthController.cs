@@ -1,6 +1,9 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using todoapp.server.Dtos.UserDtos;
 using todoapp.server.Services.Implementations;
 using todoapp.server.Services.Interfaces;
@@ -22,7 +25,7 @@ namespace todoapp.server.Controllers
         public async Task<ActionResult<UserLoginResponse>> Login([FromBody] UserLoginRequest request, CancellationToken ct)
         {
             var response = await _authService.LoginAsync(request, ct);
-            return response.Success ? Ok(response) : BadRequest(response);
+            return response.Result ? Ok(response) : BadRequest(response);
         }
 
         [HttpPost("signup")]

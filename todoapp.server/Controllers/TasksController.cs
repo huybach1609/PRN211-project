@@ -1,27 +1,15 @@
-﻿using System.Collections.Generic;
-using System.Reflection;
-using System.Reflection.Metadata.Ecma335;
-using System.Security.Claims;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.VisualBasic;
-using todoapp.server.Models;
+using System.Security.Claims;
 using todoapp.server.Services.Implementations;
 using todoapp.server.Services.Interfaces;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace todoapp.server.Controllers
 {
 
     public class TaskAddRequest()
     {
-        //    name: name, // string
-        //    description: description, //string
-        //    listId: listId, // int
-        //    dueDate: dueDate,// dateonly
-        //    selectedTags: Array.from(selectedTags).map(Number), // list<int>
         public int TaskId { get; set; }
         public string? Name { get; set; }
         public string? Description { get; set; }
@@ -36,7 +24,7 @@ namespace todoapp.server.Controllers
         public bool Status { get; set; }
 
     }
-    [Route("api/[controller]")]
+    [Route("api/tasks")]
     [ApiController]
     public class TasksController : ControllerBase
     {
@@ -47,6 +35,33 @@ namespace todoapp.server.Controllers
         }
 
 
+
+        /// <param name="listId">List Id that contains list of tasks.(optional)</param>
+        /// <param name="ct">Cancellation token (optional).</param>
+        /// <returns>Returns counts of total, today, upcoming, overdue, and completed tasks.</returns>
+        [Authorize]
+        [HttpGet("task-count")]
+        [ProducesResponseType(typeof(TaskCountsDto),StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> GetTaskCount(
+            [FromQuery] int listId
+            , CancellationToken ct = default)
+        {
+            try
+            {
+                var userIdClaim = Convert.ToInt32(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+                return
+                    Ok(await _taskService.GetTaskCountsByTimestampAsync(userIdClaim, listId, ct));
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
 
         [Authorize]
         [HttpGet("get/{taskId}")]

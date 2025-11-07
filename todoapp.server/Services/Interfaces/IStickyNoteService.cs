@@ -4,11 +4,10 @@ namespace todoapp.server.Services.Interfaces
 {
     public interface IStickyNoteService
     {
-        List<StickyNote> GetStickyNotesByUserId(int userId);
-        StickyNote GetStickyNoteById(int stId);
-        StickyNote UpdateStickyNote(int stId, StickyNote note);
-        StickyNote DeleteStickyNote(int userId, int stId);
-        StickyNote CreateStickyNote(StickyNote note);
-        
+        Task<List<StickyNote>> GetStickyNotesByUserId(int userId, CancellationToken ct);
+        Task<StickyNote?> GetStickyNoteById(int stId, CancellationToken ct);
+        Task<StickyNote?> UpdateStickyNote(int userId,StickyNote note, CancellationToken ct);
+        Task<StickyNote?> DeleteStickyNote(int userId, int stId, CancellationToken ct);
+        Task<StickyNote?> CreateStickyNote(StickyNote note, CancellationToken ct);
     }
 }
