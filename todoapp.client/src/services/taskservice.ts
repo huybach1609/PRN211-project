@@ -1,137 +1,100 @@
-import axios from "axios";
-import { getHeaders, getUser } from "../utils/tokenManage";
-import { API_URL } from "../constrains";
 import { IStickyNote } from "../types/StickyNote";
 import { ISubTask } from "../types/SubTask";
-import { TaskRequest } from "../types/Task";
+import { TaskRequest, TaskCountsDto } from "../types/Task";
 
-interface User {
-  id: string;
-}
-
-interface RequestBody {
-  taskId?: string;
-  [key: string]: any;
-}
-
-interface SubTaskRequest {
-  id?: string;
-  [key: string]: any;
-}
-
-interface StickyNote {
-  id?: string;
-  name: string;
-  details?: string;
-}
-
+import { createApiInstance } from "../utils/apiUtils";
+const api = createApiInstance();
 //----------------------------------------------
-// get task by id
-export const fetchTaskById = async (taskId: number) => {
-  return axios.get(API_URL + `/tasks/get/${taskId}`, {
-    headers: getHeaders(),
-  });
+export const TaskService = {
+
+  fetchTaskCount: async (): Promise<{ data: TaskCountsDto }> => {
+    return api.get(`/tasks/task-count`);
+  },
+
+  // get task by id
+  fetchTaskById: async (taskId: number) => {
+    return api.get(`/tasks/get/${taskId}`);
+  },
+
+  // get data by time
+  fetchDataTask: async (timeTag: string) => {
+    return api.get(`/tasks/${timeTag}`);
+  },
+  // get data by list
+  fetchDataTaskByList: async (listId: number) => {
+    return api.get(`/tasks/list/${listId}`);
+  },
+
+  fetchUpdateTask: async (requestbody: TaskRequest) => {
+    return api.put(`/tasks/${requestbody.taskId}`, requestbody);
+  },
+  fetchCreateTask: async (requestbody: TaskRequest) => {
+    return api.post(`/tasks`, requestbody);
+  },
+  fetchDeleteTask: async (taskId: number) => {
+    return api.delete(`/tasks/${taskId}`);
+  },
+
+  fetchSetStatus: async (taskId: number, status: boolean | string) => {
+    return api.get(`/tasks/updatestatus/${taskId}/${status}`);
+  },
+
+  // Get task counts by list
+  fetchTaskCountByList: async (listId: number = 0): Promise<{ data: TaskCountsDto }> => {
+    return api.get(`/tasks/task-count?listId=${listId}`);
+  }
 };
 
-// get data by time
-export const fetchDataTask = async (timeTag: string) => {
-  return axios.get(API_URL + `/tasks/${timeTag}`, {
-    headers: getHeaders(),
-  });
-};
-// get data by list
-export const fetchDataTaskByList = async (listId: number) => {
-  return axios.get(API_URL + `/tasks/list/${listId}`, {
-    headers: getHeaders(),
-  });
-};
-
-export const fetchUpdateTask = async (requestbody: TaskRequest) => {
-  return axios.put(API_URL + `/tasks/${requestbody.taskId}`, requestbody, {
-    headers: getHeaders(),
-  });
-};
-export const fetchCreateTask = async (requestbody: TaskRequest) => {
-  return axios.post(API_URL + `/tasks`, requestbody, {
-    headers: getHeaders(),
-  });
-};
-export const fetchDeleteTask = async (taskId: number) => {
-  return axios.delete(API_URL + `/tasks/${taskId}`, {
-    headers: getHeaders(),
-  });
-};
-
-export const fetchSetStatus = async (taskId: number, status: boolean | string) => {
-  return axios.get(API_URL + `/tasks/updatestatus/${taskId}/${status}`, {
-    headers: getHeaders(),
-  });
-};
 //------------------------------
 // subtask handle
 
 // add
 export const fetchAddSubTask = async (requestbody: any) => {
-  return axios.post(API_URL + `/subtasks`, requestbody, {
-    headers: getHeaders(),
-  });
+  return api.post(`/subtasks`, requestbody);
 };
 // update status
 export const fetchUpdateSubTask = async (requestbody: ISubTask) => {
-  return axios.put(API_URL + `/subtasks/${requestbody.id}`, requestbody, {
-    headers: getHeaders(),
-  });
+  return api.put(`/subtasks/${requestbody.id}`, requestbody);
 };
 // delete
 export const fetchDeleteSubTask = async (subtaskId: number) => {
-  return axios.delete(API_URL + `/subtasks/${subtaskId}`, {
-    headers: getHeaders(),
-  });
+  return api.delete(`/subtasks/${subtaskId}`);
 };
 
 //-----------------------------------
 // sticky note api call
 export const StickyNoteService = {
   fetchDataSn: async () => {
-    const user = JSON.parse(getUser() || "{}") as User;
-
-    return axios.get(API_URL + `/stickynotes/${user.id}`, {
-      headers: getHeaders(),
-    });
+    // GET: api/stickynotes - returns all sticky notes for current user
+    return api.get(`/stickynotes`);
   },
 
   fetchUpdateSn: async (selectedItem: IStickyNote) => {
-    return await axios.put(
-      `${API_URL}/stickynotes/${selectedItem.id}`,
+    // PUT: api/stickynotes?id={id} - updates sticky note
+    return await api.put(
+      `/stickynotes/${selectedItem.id}`,
       {
         id: selectedItem.id,
         name: selectedItem.name,
         details: selectedItem.details,
-      },
-      {
-        headers: getHeaders(),
       }
     );
   },
 
   fetchCreateSn: async (selectedItem: IStickyNote) => {
-    const user = JSON.parse(getUser() || "{}") as User;
-    return await axios.post(
-      `${API_URL}/stickynotes/${user.id}`,
+    // POST: api/stickynotes - creates new sticky note
+    // Note: id should be null/0 for creation, name is required
+    return await api.post(
+      `/stickynotes`,
       {
-        id: selectedItem.id,
+        id: selectedItem.id ?? 0,
         name: selectedItem.name,
-        detail: selectedItem.details,
-      },
-      {
-        headers: getHeaders(),
+        details: selectedItem.details,
       }
     );
   },
   fetchDeleteSn: async (stickyNoteId: number) => {
-    const user = JSON.parse(getUser() || "{}") as User;
-    return await axios.delete(`${API_URL}/stickynotes/${user.id}/${stickyNoteId}`, {
-      headers: getHeaders(),
-    });
+    // DELETE: api/stickynotes/{id} - deletes sticky note
+    return await api.delete(`/stickynotes/${stickyNoteId}`);
   }
 };

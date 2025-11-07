@@ -1,7 +1,7 @@
 import { Link } from "@heroui/link";
 import React, { useState } from "react";
 import { Navbar } from "../components/ui/navbar";
-import { SideBar } from "../components/ui/sizebar";
+import { SideBar } from "../components/ui/sidebar";
 import { Button } from "@heroui/button";
 import { Menu } from "lucide-react";
 

@@ -1,62 +1,35 @@
-import axios from "axios";
-import { API_URL } from "../constrains";
-import { getHeaders, getUser } from "../utils/tokenManage";
+
 import { ITask } from "../types/Task";
+import { createApiInstance } from "../utils/apiUtils";
 
 export interface ListItem {
   id: string;
   name: string;
   tasks: ITask[];
-  
+
 }
+const api = createApiInstance();
 
-interface User {
-  id: string;
-}
+export const ListService = {
+  GetLists: async () => {
+    return await api.get(`/lists?includeCounts=true`);
+  },
 
-export const GetListAccount = async () => {
-  const user = JSON.parse(getUser() || "{}") as User;
-  return await axios.get(API_URL + `/odata/Lists/user/${user.id}`, {
-    headers: getHeaders(),
-  });
-};
 
-export const GetListById = async (listId: string) => {
-  return axios.get(API_URL + `/odata/lists/${listId}`, {
-    headers: getHeaders(),
-  });
-};
+  GetListById: async (listId: number) => {
+    return await api.get(`/lists/${listId}`);
+  },
 
-export const GetNumOfTaskInfo = async (timestamp: string, listId: number | null) => {
-  return axios.get(API_URL + `/count-info/${timestamp}/${listId ?? ''}`, {
-    headers: getHeaders(),
-  });
-};
+  GetNumOfTaskInfo: async (timestamp: string, listId: number | null) => {
+    return await api.get(`/count-info/${timestamp}/${listId ?? ''}`);
+  },
 
-export const UpdateListAxios = async (selectedItem: ListItem) => {
-  return await axios.put(
-    API_URL + `/odata/Lists`,
-    {
-      id: selectedItem.id,
-      name: selectedItem.name,
-    },
-    {
-      headers: getHeaders(),
-    }
-  );
-};
+  UpdateList: async (selectedItem: ListItem) => {
+    return await api.put(`/lists`, selectedItem);
+  },
 
-export const CreateListAxios = async (selectedItem: ListItem) => {
-  const user = JSON.parse(getUser() || "{}") as User;
-  return await axios.post(
-    API_URL + `/odata/Lists`,
-    {
-      name: selectedItem.name,
-      accountId: user.id,
-    },
-    {
-      headers: getHeaders(),
-    }
-  );
+  CreateList: async (selectedItem: ListItem) => {
+    return await api.post(`/lists`, selectedItem);
+  },
 };
 

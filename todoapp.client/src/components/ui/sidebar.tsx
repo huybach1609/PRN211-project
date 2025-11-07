@@ -9,18 +9,18 @@ import { ListboxItemView, ListboxWrapper } from "../../components/sidebar/listbo
 import { getToken, getUser } from "../../utils/tokenManage";
 import axios from "axios";
 import { API_URL } from "../../constrains";
-import { GetListAccount, GetNumOfTaskInfo, ListItem } from "../../services/listservice";
+import { ListService, ListItem } from "../../services/listservice";
 import { IUser } from "../../types/User";
 import { ITag } from "../../types/Tag";
 import { Input, Listbox, ListboxItem } from "@heroui/react";
 import { LogOut, Plus, Search, Settings2 } from "lucide-react";
+import { TaskService } from "../../services/taskservice";
+import { TaskCountsDto } from "../../types/Task";
+import { ListResponseDto } from "../../types/list";
+import { TagService } from "../../services/tagservice";
 
 interface SideBarProps {
     isOpen: boolean;
-}
-
-interface TaskCounts {
-    [key: string]: number;
 }
 
 export const UseSelectionView = () => {
@@ -72,27 +72,20 @@ const HeadingBar = () => {
 }
 
 export const GetTags = async () => {
-    const user: IUser = JSON.parse(getUser() || '{}');
-    return await axios.get(API_URL + `/tags/user/${user.id}`,
-        {
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${getToken()}`
-            }
-            ,
-        }
-    );
+    const response = await TagService.GetTags();
+    return response.data;
 }
 
 
 export const SideBar = ({ isOpen }: SideBarProps) => {
-    const [lists, setLists] = useState<ListItem[]>([]);
+    const [lists, setLists] = useState<ListResponseDto[]>([]);
     const [tags, setTags] = useState<ITag[]>([]);
     const navigate = useNavigate();
     useEffect(() => {
         const fetchData = async () => {
-            const data = await GetListAccount();
-            setLists(data.data || []);
+            const response = await ListService.GetLists();
+            console.log("lists", response.data);
+            setLists(response.data || []);
 
             const tagsResponse = await GetTags();
             setTags(tagsResponse.data || []);
@@ -101,32 +94,27 @@ export const SideBar = ({ isOpen }: SideBarProps) => {
     }, [])
 
 
-    const [taskCounts, setTaskCounts] = useState<TaskCounts>({});
+    const [tasks, setTasks] = useState<Object[]>([
+        { label: "UpComing", key: "/task/future", timestamp: "upcoming", count: 0 },
+        { label: "Today", key: "/task/today", timestamp: "today", count: 0 },
+        { label: "Lated", key: "/task/past", color: "danger", timestamp: "overdue", count: 0 },
+        { label: "Sticky Note", key: "/sticky-notes", timestamp: "total", count: 0 }
+    ]);
 
     useEffect(() => {
         const fetchCounts = async () => {
-            const tasks = [
-                { label: "UpComing", key: "/task/future", timestamp: "future" },
-                { label: "Today", key: "/task/today", timestamp: "today" },
-                { label: "Lated", key: "/task/past", color: "danger", timestamp: "past" },
-                { label: "Sticky Note", key: "/sticky-notes", timestamp: "t" }
-            ];
-
-            const counts = await Promise.all(
-                tasks.map(async (task) => {
-                    try {
-                        const response = await GetNumOfTaskInfo(task.timestamp, 0);
-
-                        const count = response.data ?? 0;
-                        return { key: task.key, count };
-                    } catch (error) {
-                        console.error(`Error fetching count for ${task.label}:`, error);
-                        return { key: task.key, count: 0 };
-                    }
-                })
-            );
-
-            setTaskCounts(Object.fromEntries(counts.map(({ key, count }) => [key, count])));
+            try {
+                const response: { data: TaskCountsDto } = await TaskService.fetchTaskCount();
+                console.log(response.data);
+                setTasks((prevTasks) => 
+                    prevTasks.map((task: any) => ({ 
+                        ...task, 
+                        count: response.data[task.timestamp as keyof TaskCountsDto] || 0 
+                    }))
+                );
+            } catch (error) {
+                console.error("Error fetching task counts:", error);
+            }
         };
         fetchCounts();
     }, []);
@@ -144,12 +132,7 @@ export const SideBar = ({ isOpen }: SideBarProps) => {
             <div id="task" className=" flex-auto">
                 <ListboxWrapper header='Tasks'>
                     <Listbox aria-label="Actions" onAction={(key) => navigate(key as string)}>
-                        {[
-                            { label: "UpComing", key: "/task/future" },
-                            { label: "Today", key: "/task/today" },
-                            { label: "Lated", key: "/task/past", color: "danger" },
-                            { label: "Sticky Note", key: "/sticky-notes" }
-                        ].map((item) => ListboxItemView(item.label, item.key, item.color, taskCounts[item.key] || 0))}
+                        {tasks.map((item: any) => ListboxItemView(item.label, item.key, item.color, item.count))}
                     </Listbox>
                 </ListboxWrapper>
             </div>
@@ -159,9 +142,9 @@ export const SideBar = ({ isOpen }: SideBarProps) => {
                     <Listbox aria-label="Actions" onAction={(key) => navigate(key as string)}>
 
                         <>
-                            {lists.slice(0, 4).map((item) => (
-                                <React.Fragment key={`/task/list/${item.id}`}>
-                                    {ListboxItemView(item.name, `/task/list/${item.id}`, undefined, item.tasks.length)}
+                            {lists.slice(0, 4).map((item: ListResponseDto) => (
+                                <React.Fragment key={`/task/list/${item.result.id}`}>
+                                    {ListboxItemView(item.result.name, `/task/list/${item.result.id}`, undefined, item.numberOfTaskInfo)}
                                 </React.Fragment>
                             ))}
                         </>

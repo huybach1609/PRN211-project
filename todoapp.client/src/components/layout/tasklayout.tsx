@@ -1,18 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@heroui/button";
-import { ChevronRight, Cross, Menu, Plus, Save, Trash, Trash2 } from "lucide-react";
-import { addToast, Checkbox, DatePicker, Input, ScrollShadow, Select, SelectItem } from "@heroui/react";
-import Tiptaptext from "../richtextbox/tiptaptext";
+import { ChevronRight } from "lucide-react";
+import { addToast, DatePicker, Input, Select, SelectItem } from "@heroui/react";
 import Tiptap from "../richtextbox/Tiptap";
-import { GetListAccount } from "../../services/listservice";
-import { fetchCreateTask, fetchDeleteTask, fetchTaskById, fetchUpdateSn, fetchUpdateTask } from "../../services/taskservice";
+import { ListService } from "../../services/listservice";
+import { TaskService } from "../../services/taskservice";
 import { getLocalTimeZone, parseDate, today } from "@internationalized/date";
 import { SubtaskComponent } from "./subtaskcomponent";
 import { ITask, TaskRequest } from "../../types/Task";
 import { ITag } from "../../types/Tag";
 import { ISubTask } from "../../types/SubTask";
-import { GetTags } from "../ui/sizebar";
+import { GetTags } from "../ui/sidebar";
 
 interface TaskLayoutProps {
     isOpen: boolean;
@@ -55,7 +54,7 @@ function TaskLayout({ isOpen, setOpen, taskId = 0, onTaskSaved }: TaskLayoutProp
             resetTaskStates();
 
             Promise.all([
-                GetListAccount(),
+                ListService.GetLists(),
                 GetTags()
             ])
                 .then(([listResponse, tagResponse]) => {
@@ -75,8 +74,8 @@ function TaskLayout({ isOpen, setOpen, taskId = 0, onTaskSaved }: TaskLayoutProp
         }
         else {
             Promise.all([
-                fetchTaskById(taskId),
-                GetListAccount(),
+                TaskService.fetchTaskById(taskId),
+                ListService.GetLists(),
                 GetTags()
             ])
                 .then(([taskResponse, listResponse, tagResponse]) => {
@@ -146,13 +145,13 @@ function TaskLayout({ isOpen, setOpen, taskId = 0, onTaskSaved }: TaskLayoutProp
         };
 
         if (taskId) {
-            fetchUpdateTask(taskObject)
+            TaskService.fetchUpdateTask(taskObject)
                 .then(handleResponse)
                 .catch(error => {
                     console.error("Update task error:", error);
                 });
         } else {
-            fetchCreateTask(taskObject)
+            TaskService.fetchCreateTask(taskObject)
                 .then(handleResponse)
                 .catch(error => {
                     console.error("Create task error:", error);
@@ -161,7 +160,7 @@ function TaskLayout({ isOpen, setOpen, taskId = 0, onTaskSaved }: TaskLayoutProp
     };
 
     const handleDelete = () => {
-        fetchDeleteTask(taskId)
+        TaskService.fetchDeleteTask(taskId)
             .then(response => {
                 if (response.data.status) {
                     addToast({

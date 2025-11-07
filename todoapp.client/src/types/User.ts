@@ -15,8 +15,7 @@ export class User implements IUser {
     }
 }
 export interface AuthResponse {
-    success: boolean;
+    result: boolean;
     message: string;
-    user: IUser;
-    key: string;
+    accessToken: string;
 }

@@ -13,7 +13,7 @@ export interface UserAuthState {
 }
 
 interface AuthContextType extends UserAuthState {
-    login: (token: string, user: IUser) => void;
+    login: (token: string) => void;
     logout: () => void;
 }
 
@@ -104,11 +104,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     /**
      * Login user with token and user data
      */
-    const login = useCallback((token: string, user: IUser) => {
+    const login = useCallback((token: string) => {
         localStorage.setItem(JWT_STORAGE_KEY, token);
         setAuthState({
             isAuthenticated: true,
-            user: user,
+            user: null,
             token: token,
             isLoading: false,
         });

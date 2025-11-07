@@ -5,10 +5,13 @@ import { addToast } from "@heroui/react";
 import { useNavigate } from "react-router-dom";
 import { AuthService, LoginRequest } from "../../services/authservice";
 import { useAuth } from "../../contexts/AuthContext";
-import { IUser } from "../../types/User";
+import { AuthResponse } from "../../types/User";
 import axios from "axios";
 
 
+interface LoginResponse {
+   
+}
 
 const LoginForm = () => {
     const navigate = useNavigate();
@@ -28,17 +31,17 @@ const LoginForm = () => {
         try {
 
             const response = await AuthService.login(formData);
-            const { success, message, user, key } = response.data;
-            console.log("Data: ",response.data);
+            const loginResponse = response.data;
+            console.log("Data: ",loginResponse);
 
-            if (success) {
+            if (loginResponse.result) {
                 addToast({
-                    title: message,
+                    title: loginResponse.message,
                     promise: new Promise((resolve) => setTimeout(resolve, 3000)),
                 });
 
                 // proccess to save token and load user data
-                login(key, user as IUser);
+                login(loginResponse.accessToken);
 
                 setFormData({} as LoginRequest);
 

@@ -11,7 +11,7 @@ import {
     addToast,
 } from "@heroui/react";
 import { Check, Cross, Save, X } from "lucide-react";
-import { CreateListAxios, GetListAccount, ListItem, UpdateListAxios } from "../../services/listservice";
+import { ListService, ListItem } from "../../services/listservice";
 import { ITask } from "../../types/Task";
 
 export const ListTaskView = () => {
@@ -20,11 +20,14 @@ export const ListTaskView = () => {
     const [list, setList] = useState<ListItem[]>([]);
     const [selectedItem, setSelectedItem] = useState<ListItem>();
     useEffect(() => {
-        GetListAccount()
+        ListService.GetLists()
             .then(response => {
-                //console.log(response);
-                setList(response.data);
-            }).catch();
+                console.log(response.data);
+                setList(response.data || []);
+            })
+            .catch(error => {
+                console.error("Error fetching lists:", error);
+            });
     }, [])
 
     const handleOpen = (item: ListItem, isAddStatus: boolean) => {
@@ -53,7 +56,7 @@ export const ListTaskView = () => {
     };
     const UpdateList = () => {
         //console.log(selectedItem);
-        UpdateListAxios(selectedItem as ListItem)
+        ListService.UpdateList(selectedItem as ListItem)
             .then(response => {
                 if (response.data.status) {
                     //console.log(response);
@@ -79,8 +82,8 @@ export const ListTaskView = () => {
 
     }
     const CreateList = () => {
-        //console.log(selectedItem);
-        CreateListAxios(selectedItem as ListItem)
+        console.log(selectedItem);
+        ListService.CreateList(selectedItem as ListItem)
             .then(response => {
                 if (response.data.status) {
                     addToast({ title: response.data.message, color: "success" });
@@ -90,7 +93,6 @@ export const ListTaskView = () => {
                 }
             })
             .catch();
-
         onClose();
     }
     return (
@@ -144,15 +146,15 @@ export const ListTaskView = () => {
                         {(onClose) => (
                             <>
                                 <ModalHeader className="flex flex-col gap-1">
-                                    <input type="hidden" value={selectedItem?.id} />
-                                    <input type="text" className="font-bold w-full" value={selectedItem?.name} placeholder="Title"
-                                        onChange={(e) => setSelectedItem({ ...selectedItem, name: e.target.value } as ListItem)}
+                                    <input type="hidden" value={selectedItem?.id ?? ''} />
+                                    <input type="text" className="font-bold w-full" value={selectedItem?.name ?? ''} placeholder="Title"
+                                        onChange={(e) => setSelectedItem({ ...(selectedItem || {}), name: e.target.value } as ListItem)}
                                     />
                                 </ModalHeader>
 
                                 <ModalBody>
 
-                                    {selectedItem?.tasks.map((taskItem: ITask) => (
+                                    { selectedItem?.tasks?.map((taskItem: ITask) => (
                                         <div className="flex gap-2 hover:bg-bg4 p-4 rounded-lg"
                                             key={taskItem.id}
                                         >

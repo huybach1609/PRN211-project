@@ -31,11 +31,10 @@ export const StickyNote = () => {
     const fetchSt = async () => {
       try {
         const data = await StickyNoteService.fetchDataSn();
-        //console.log(data);
-        // Ensure data.data is an array, fallback to empty array if not
+        // Controller returns Ok(notes) which is directly an array
         setSt(Array.isArray(data.data) ? data.data : []);
       } catch (error) {
-        console.error("Failed to load account info:", error);
+        console.error("Failed to load sticky notes:", error);
         setSt([]); // Set to empty array on error
       }
     };
@@ -43,53 +42,82 @@ export const StickyNote = () => {
   }, []);
 
   const handleCardClick = (item?: IStickyNote) => {
-    setSelectedItem(item);
+    // If no item provided, initialize with empty object for new note
+    setSelectedItem(item || { id: 0, userId: 0, name: "", details: "" });
     setSize("md");
     onOpen();
   };
 
   const DeleteSn = async () => {
-    StickyNoteService.fetchDeleteSn(selectedItem?.id ?? 0)
+    if (!selectedItem?.id) return;
+    
+    StickyNoteService.fetchDeleteSn(selectedItem.id)
       .then((response) => {
-        if (response.data.status) {
-          addToast({ title: response.data.message, color: "success" });
+        // Controller returns NoContent (204) on success
+        if (response.status === 204) {
+          addToast({ title: "Sticky note deleted successfully", color: "success" });
           setSt((prevSt) =>
-            prevSt.filter((item) => item.id !== response.data.obj.id)
+            prevSt.filter((item) => item.id !== selectedItem.id)
           );
         }
       })
-      .catch(() => {});
+      .catch((error) => {
+        console.error("Failed to delete sticky note:", error);
+        addToast({ 
+          title: error.response?.data?.message || "Failed to delete sticky note", 
+          color: "danger" 
+        });
+      });
   };
 
   const CreateSn = async () => {
+    if (!selectedItem?.name) {
+      addToast({ title: "Name is required", color: "danger" });
+      return;
+    }
+
     StickyNoteService.fetchCreateSn(selectedItem as IStickyNote)
       .then((response) => {
-        //console.log(response);
-        setSt((preSt) => [...preSt, response.data.obj]);
+        // Controller returns CreatedAtAction with the created note
+        if (response.status === 201 && response.data) {
+          addToast({ title: "Sticky note created successfully", color: "success" });
+          setSt((preSt) => [...preSt, response.data]);
+        }
       })
-      .catch(() => {});
+      .catch((error) => {
+        console.error("Failed to create sticky note:", error);
+        const errorMessage = error.response?.data?.message || 
+                            error.response?.data?.errors?.Name?.[0] ||
+                            "Failed to create sticky note";
+        addToast({ title: errorMessage, color: "danger" });
+      });
   };
 
   const UpdateSn = async () => {
-    StickyNoteService.fetchUpdateSn(selectedItem as IStickyNote).then((response) => {
-      //console.log(response)
-      if (response.data.status) {
-        addToast({ title: response.data.message, color: "success" });
-        const updatest = st.map((element) => {
-          if (element.id == selectedItem?.id) {
-            return {
-              ...element,
-              name: selectedItem.name,
-              details: selectedItem.details,
-            };
-          }
-          return element;
-        });
-        setSt(updatest);
-      }
-    }).catch(() => {
-      //console.log(err);
-    });
+    if (!selectedItem?.id || !selectedItem?.name) {
+      addToast({ title: "Name is required", color: "danger" });
+      return;
+    }
+
+    StickyNoteService.fetchUpdateSn(selectedItem as IStickyNote)
+      .then((response) => {
+        // Controller returns Ok(note) with the updated note
+        if (response.status === 200 && response.data) {
+          addToast({ title: "Sticky note updated successfully", color: "success" });
+          setSt((prevSt) =>
+            prevSt.map((element) =>
+              element.id === selectedItem.id ? response.data : element
+            )
+          );
+        }
+      })
+      .catch((error) => {
+        console.error("Failed to update sticky note:", error);
+        const errorMessage = error.response?.data?.message || 
+                            error.response?.data?.errors?.Name?.[0] ||
+                            "Failed to update sticky note";
+        addToast({ title: errorMessage, color: "danger" });
+      });
   };
 
   return (
@@ -163,7 +191,7 @@ export const StickyNote = () => {
                   color="success"
                   variant="flat"
                   onPress={() => {
-                    if (selectedItem?.id == 0) {
+                    if (!selectedItem?.id || selectedItem.id === 0) {
                       CreateSn();
                     } else {
                       UpdateSn();

@@ -1,7 +1,7 @@
 import { useNavigate, useParams } from "react-router-dom"
 import DefaultLayout from "../../layouts/default";
 import { useEffect, useState } from "react";
-import { fetchDataTask, fetchSetStatus } from "../../services/taskservice";
+import { TaskService } from "../../services/taskservice";
 import { ArrowRightToLine, BadgeInfo, Calendar1, Check, ChevronLeft, Plus, SquareArrowDownRightIcon } from "lucide-react";
 import { color } from "framer-motion";
 import { Button } from "@heroui/button";
@@ -42,7 +42,7 @@ const TableTaskLayout = ({ title = 'tasks', tasksQuery = [] }: TableTaskLayoutPr
     }
 
     const checkBoxHandle = (taskId: number, status: boolean) => {
-        fetchSetStatus(taskId, status)
+        TaskService.fetchSetStatus(taskId, status)
             .then(response => {
             })
             .catch();

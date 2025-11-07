@@ -8,7 +8,7 @@ import landing from '../../assets/png/landing.png';
 
 
 
-const EnterAnimation = ({ ball }) => {
+const EnterAnimation = ({ ball }: { ball: React.CSSProperties }) => {
     return (
         <motion.div
             className="z-10"

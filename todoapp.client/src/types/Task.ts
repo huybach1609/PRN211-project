@@ -22,3 +22,11 @@ export interface TaskRequest {
     dueDate: Date;
     selectedTags: number[];
 }
+
+export interface TaskCountsDto {
+    total: number;
+    today: number;
+    upcoming: number;
+    overdue: number;
+    completed: number;
+}

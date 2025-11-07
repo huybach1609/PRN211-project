@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from "react-router-dom";
-import { fetchDataTask } from "../../services/taskservice";
+import { TaskService } from "../../services/taskservice";
 import { useEffect, useState } from "react";
 import TableTaskLayout from "../../components/layout/tabletasklayout";
 
@@ -12,7 +12,7 @@ const TaskTimeFilter = () => {
 
     useEffect(() => {
         const fetch = async () => {
-            fetchDataTask(type)
+            TaskService.fetchDataTask(type as string)
                 .then(response => {
                     setTasks(response.data.tasks);
                     //console.log(response);
